@@ -22,7 +22,7 @@
     <div id="rssButtonBar" style="overflow: hidden; height: 30px;">
         <button id="newSubscriptionButton" onclick="qBittorrent.Rss.addRSSFeed()">QBT_TR(New subscription)QBT_TR[CONTEXT=RssReaderWidget]</button>
         <button id="markReadButton" onclick="qBittorrent.Rss">QBT_TR(Mark items read)QBT_TR[CONTEXT=RssReaderWidget]</button>
-        <button id="updateAllButton" onclick="qBittorrent.Rss">QBT_TR(Update all)QBT_TR[CONTEXT=RssReaderWidget]</button>
+        <button id="updateAllButton" onclick="qBittorrent.Rss.refreshAllFeeds()">QBT_TR(Update all)QBT_TR[CONTEXT=RssReaderWidget]</button>
             
         <button id="rssDownloaderButton" class="alignRight" onclick="qBittorrent.Rss">QBT_TR(RSS Downloader...)QBT_TR[CONTEXT=RssReaderWidget]</button>
     </div>
@@ -69,11 +69,14 @@
                 showRssFeed: showRssFeed,
                 showUnreadRssFeed: showUnreadRssFeed,
                 showDetails: showDetails,
-                updateRssFeedList: updateRssFeedList
+                updateRssFeedList: updateRssFeedList,
+                refreshFeed: refreshFeed,
+                refreshAllFeeds: refreshAllFeeds
             };
         };
 
         let feedData;
+        let feedPathMap;
 
         const init = function() {
             updateRssFeedList();
@@ -183,11 +186,14 @@
                 onSuccess: function(response) {
                     $('rssFeedsViewBody').empty();
                     feedData = {};
+                    feedPathMap = new Map();
+                    console.log(response);
                     for(let feedEntry in response) {
+                        feedPathMap.set(response[feedEntry].uid, feedEntry);
                         $('rssFeedsViewBody').append((() => {
                             let rssFeedRow = document.createElement('tr');
                             let numberOfUnread = response[feedEntry].articles.map(art => !art.isRead).filter(v => v).length;
-                            rssFeedRow.innerText = (response[feedEntry].title  || response[feedEntry].url) + ' (' + numberOfUnread + ')';
+                            rssFeedRow.innerText = feedEntry + ' (' + numberOfUnread + ')';
                             rssFeedRow.setAttribute("data-uid", response[feedEntry].uid);
                             rssFeedRow.setAttribute("data-url", response[feedEntry].url);
                             if (response[feedEntry].hasError) {
@@ -219,6 +225,43 @@
             }).send();
         };
 
+        const refreshFeed = function(feedUid, callback = () => {}) {
+            console.log(feedPathMap.get(feedUid));
+            const url = new URI('api/v2/rss/refreshItem');
+            new Request({
+                url: url,
+                noCache: true,
+                method: 'post',
+                data: {
+                    itemPath: feedPathMap.get(feedUid)
+                },
+                onSuccess: function(response) {
+                    callback(0);
+                },
+                onFailure: function(response) {
+                    callback(1);
+                }
+            }).send();
+        };
+
+        const refreshAllFeeds = function() {
+            var promises = [];
+            for(let feedEntry in feedData) {
+                promises.push(new Promise(function(resolve, reject) {
+                    refreshFeed(feedEntry, r => {
+                        if (r == 0)
+                            resolve();
+                        else
+                            reject();
+                    });
+                }));
+            }
+            Promise.all(promises).then(async function() {
+                //needs to be replaced by auto reload
+                await new Promise((e) => {setTimeout(e, 1000);});
+                updateRssFeedList();
+            });
+        };
 
         return exports();
     })();
