@@ -77,7 +77,6 @@
 
         const init = function() {
             updateRssFeedList();
-            showUnreadRssFeed();
         };
         
         const addRSSFeed = function() {
@@ -109,7 +108,8 @@
         
         const showRssFeed = function(feedUid) {
             $('rssTorrentViewBody').empty();
-            feedData[feedUid].each(torrentEntry =>  {
+            feedData[feedUid].sort((e1, e2) => new Date(e2.date) - new Date(e1.date))
+                .each(torrentEntry => {
                 $('rssTorrentViewBody').append((() => {
                     let rssTorrentRow = document.createElement('tr');
                     rssTorrentRow.innerText = torrentEntry.title;
@@ -127,23 +127,26 @@
 
         const showUnreadRssFeed = function() {
             $('rssTorrentViewBody').empty();
+            let unreadFeed = [];
             for(let feedEntry in feedData) {
-                feedData[feedEntry].each(torrentEntry =>  {
-                    if (!torrentEntry.isRead){
-                        $('rssTorrentViewBody').append((() => {
-                            let rssTorrentRow = document.createElement('tr');
-                            rssTorrentRow.innerText = torrentEntry.title;
-                            rssTorrentRow.setAttribute("data-id", torrentEntry.id);
-                            rssTorrentRow.addClass("bold");
-                            rssTorrentRow.onclick = function() {
-                                qBittorrent.Rss.showDetails(feedEntry, torrentEntry.id);
-                            }
-                            return rssTorrentRow;
-                        })());
-                    }
-                });
+                unreadFeed.append(feedData[feedEntry].filter(e => !e.isRead)
+                    .map(f => {f.feedUid = feedEntry; return f;}));
             }
-        }
+            unreadFeed.sort((e1, e2) => new Date(e2.date) - new Date(e1.date));
+
+            unreadFeed.each(torrentEntry =>  {
+                $('rssTorrentViewBody').append((() => {
+                    let rssTorrentRow = document.createElement('tr');
+                    rssTorrentRow.innerText = torrentEntry.title;
+                    rssTorrentRow.setAttribute("data-id", torrentEntry.id);
+                    rssTorrentRow.addClass("bold");
+                    rssTorrentRow.onclick = function() {
+                        qBittorrent.Rss.showDetails(torrentEntry.feedUid, torrentEntry.id);
+                    }
+                    return rssTorrentRow;
+                })());
+            });
+        };
 
         const showDetails = function(feedUid, articleID) {
             $('rssDetailsView').empty();
