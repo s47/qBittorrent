@@ -34,19 +34,22 @@
                         <thead>
                             <td>RSS feeds</td>
                         </thead>
-                        <tbody id="rssFeedsViewBody">
-                        
-                        </tbody>
+                        <tbody id="rssFeedsViewBody"></tbody>
                     </table>
                 </td>
                     <table id="rssTorrentView">
                         <thead>
                             <td>Torrents</td>
                         </thead>
-                        <tbody id="rssTorrentViewBody">
-                        
-                        </tbody>
-                <td>Detail List</td>
+                        <tbody id="rssTorrentViewBody"> </tbody>
+                <td>
+                    <div id="rssDetailsView">
+                        Name:
+                        Date:
+                        Description:
+                        Other:
+                    </div>    
+                </td>
             </tr>
         </tbody>
     </table>
@@ -113,6 +116,9 @@
                     if (!torrentEntry.isRead){
                         rssTorrentRow.addClass("bold");
                     }
+                    rssTorrentRow.onclick = function() {
+                         
+                    }
                     return rssTorrentRow;
                 })());
             });
@@ -133,8 +139,9 @@
                     for(let feedEntry in response) {
                         $('rssFeedsViewBody').append((() => {
                             let rssFeedRow = document.createElement('tr');
-                            console.log(response[feedEntry])
-                            rssFeedRow.innerText = response[feedEntry].title  || response[feedEntry].url;
+                            console.log(response[feedEntry].articles);
+                            let numberOfUnread = response[feedEntry].articles.map(art => !art.isRead).filter(v => v).length;
+                            rssFeedRow.innerText = (response[feedEntry].title  || response[feedEntry].url) + ' (' + numberOfUnread + ')';
                             rssFeedRow.setAttribute("data-uid", response[feedEntry].uid);
                             rssFeedRow.setAttribute("data-url", response[feedEntry].url);
                             if (response[feedEntry].hasError) {
