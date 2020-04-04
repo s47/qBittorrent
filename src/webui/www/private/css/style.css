@@ -31,6 +31,10 @@ body {
     display: none;
 }
 
+.invisibleImp {
+    display: none !important;
+}
+
 /* Typography */
 
 h2, h3, h4 {
@@ -636,4 +640,10 @@ td.statusBarSeparator {
 #torrentFilesTableDiv .dynamicTable tr.nonAlt:hover {
     background-color: #ee6600;
     color: #fff;
+}
+
+/* Rss Reader*/
+
+#RssPanel, #RssPanel_wrapper, #RssPanel_pad {
+    height: inherit;
 }
