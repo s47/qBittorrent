@@ -1,55 +1,55 @@
 <style>
-	#rssView {
-		margin: 20px;
-		height: 100%;
-	}
-	
-	#rssConentView {
-		width: 100%;
-		height: 100%;
-	}
-	
+    #rssView {
+        margin: 20px;
+        height: 100%;
+    }
+    
+    #rssConentView {
+        width: 100%;
+        height: 100%;
+    }
+    
     .alignRight {
         float: right;
     }
-	
-	.bold {
-		font-weight: bold;
-	}
+    
+    .bold {
+        font-weight: bold;
+    }
 </style>
 
 <div id="rssView">
     <div id="rssButtonBar" style="overflow: hidden; height: 30px;">
         <button id="newSubscriptionButton" onclick="qBittorrent.Rss.addRSSFeed()">QBT_TR(New subscription)QBT_TR[CONTEXT=RssReaderWidget]</button>
-		<button id="markReadButton" onclick="qBittorrent.Rss">QBT_TR(Mark items read)QBT_TR[CONTEXT=RssReaderWidget]</button>
+        <button id="markReadButton" onclick="qBittorrent.Rss">QBT_TR(Mark items read)QBT_TR[CONTEXT=RssReaderWidget]</button>
         <button id="updateAllButton" onclick="qBittorrent.Rss">QBT_TR(Update all)QBT_TR[CONTEXT=RssReaderWidget]</button>
-			
-		<button id="rssDownloaderButton" class="alignRight" onclick="qBittorrent.Rss">QBT_TR(RSS Downloader...)QBT_TR[CONTEXT=RssReaderWidget]</button>
+            
+        <button id="rssDownloaderButton" class="alignRight" onclick="qBittorrent.Rss">QBT_TR(RSS Downloader...)QBT_TR[CONTEXT=RssReaderWidget]</button>
     </div>
-	<table id="rssConentView">
-		<tbody id="rssTableBody">
-			<tr id="rssTableRow">
-				<td id="rssFeedsRow">
-					<table id="rssFeedsView">
-						<thead>
-							<td>RSS feeds</td>
-						</thead>
-						<tbody id="rssFeedsViewBody">
-						
-						</tbody>
-					</table>
-				</td>
-					<table id="rssTorrentView">
-						<thead>
-							<td>Torrents</td>
-						</thead>
-						<tbody id="rssTorrentViewBody">
-						
-						</tbody>
-				<td>Detail List</td>
-			</tr>
-		</tbody>
-	</table>
+    <table id="rssConentView">
+        <tbody id="rssTableBody">
+            <tr id="rssTableRow">
+                <td id="rssFeedsRow">
+                    <table id="rssFeedsView">
+                        <thead>
+                            <td>RSS feeds</td>
+                        </thead>
+                        <tbody id="rssFeedsViewBody">
+                        
+                        </tbody>
+                    </table>
+                </td>
+                    <table id="rssTorrentView">
+                        <thead>
+                            <td>Torrents</td>
+                        </thead>
+                        <tbody id="rssTorrentViewBody">
+                        
+                        </tbody>
+                <td>Detail List</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <script>
@@ -63,92 +63,95 @@
         const exports = function() {
             return {
                 init: init,
-				addRSSFeed: addRSSFeed,
-				showRssFeed: showRssFeed,
-				updateRssFeedList: updateRssFeedList
+                addRSSFeed: addRSSFeed,
+                showRssFeed: showRssFeed,
+                updateRssFeedList: updateRssFeedList
             };
         };
 
         let feedData;
 
         const init = function() {
-			updateRssFeedList();
+            updateRssFeedList();
         };
-		
-		const addRSSFeed = function() {
+        
+        const addRSSFeed = function() {
             const url = new URI('api/v2/rss/addFeed');
-			
-			var feedURL = prompt("Please type a RSS feed URL", "http://");
-			console.log(feedURL)
+            
+            var feedURL = prompt('Please type a RSS feed URL', 'http://');
+            console.log(feedURL);
 
-			if (feedURL != null) {
-				new Request.JSON({
-					url: url,
-					noCache: true,
-					method: 'post',
-					data: {
-						url: feedURL
-					},
-					onFailure: function(response) {
-						alert("Adding URL failed");
-					},
-					onSuccess: function(response) {
-						updateRssFeedList();
-					}
-				}).send();
-			}
-		};
-		
-		const showRssFeed = function(feedUid) {
-			$('rssTorrentViewBody').empty();
-			console.log(feedData[feedUid])
-			feedData[feedUid].each(torrentEntry =>  {
-				console.log(torrentEntry);
-				$('rssTorrentViewBody').append((() => {
-					let rssTorrentRow = document.createElement('tr');
-					rssTorrentRow.innerText = torrentEntry.title;
-					if (!torrentEntry.isRead){
-						rssTorrentRow.addClass("bold");
-					}
-					return rssTorrentRow;
-				})());
-			});
-		}
-		
+            if (feedURL != null) {
+                new Request({
+                    url: url,
+                    noCache: true,
+                    method: 'post',
+                    data: {
+                        url: feedURL,
+                        path: ''
+                    },
+                    onFailure: function(response) {
+                        if (response.status == 409) {
+                            alert(response.responseText);
+                        }
+                    },
+                    onSuccess: function(response) {
+                        updateRssFeedList();
+                    }
+                }).send();
+            }
+        };
+        
+        const showRssFeed = function(feedUid) {
+            $('rssTorrentViewBody').empty();
+            console.log(feedData[feedUid])
+            feedData[feedUid].each(torrentEntry =>  {
+                console.log(torrentEntry);
+                $('rssTorrentViewBody').append((() => {
+                    let rssTorrentRow = document.createElement('tr');
+                    rssTorrentRow.innerText = torrentEntry.title;
+                    if (!torrentEntry.isRead){
+                        rssTorrentRow.addClass("bold");
+                    }
+                    return rssTorrentRow;
+                })());
+            });
+        }
+        
         const updateRssFeedList = function() {
             const url = new URI('api/v2/rss/items');
             new Request.JSON({
                 url: url,
                 noCache: true,
                 method: 'post',
-				data: {
-					withData: true
-				},
+                data: {
+                    withData: true
+                },
                 onSuccess: function(response) {
-					$('rssFeedsViewBody').empty();
-					feedData = {};
+                    $('rssFeedsViewBody').empty();
+                    feedData = {};
                     for(let feedEntry in response) {
-						$('rssFeedsViewBody').append((() => {
-							let rssFeedRow = document.createElement('tr');
-							rssFeedRow.innerText = response[feedEntry].title;
-							rssFeedRow.setAttribute("data-uid", response[feedEntry].uid);
-							rssFeedRow.setAttribute("data-url", response[feedEntry].url);
-							if (response[feedEntry].hasError) {
-							}
-							if (response[feedEntry].isLoading) {
-							}						
-							feedData[response[feedEntry].uid] = response[feedEntry].articles;
-							rssFeedRow.onclick = function() {
-								qBittorrent.Rss.showRssFeed(this.getAttribute("data-uid"));
-							}			
-							return rssFeedRow;
-						})());
-						console.log(feedData);
-					}
-					
+                        $('rssFeedsViewBody').append((() => {
+                            let rssFeedRow = document.createElement('tr');
+                            console.log(response[feedEntry])
+                            rssFeedRow.innerText = response[feedEntry].title  || response[feedEntry].url;
+                            rssFeedRow.setAttribute("data-uid", response[feedEntry].uid);
+                            rssFeedRow.setAttribute("data-url", response[feedEntry].url);
+                            if (response[feedEntry].hasError) {
+                            }
+                            if (response[feedEntry].isLoading) {
+                            }						
+                            feedData[response[feedEntry].uid] = response[feedEntry].articles;
+                            rssFeedRow.onclick = function() {
+                                qBittorrent.Rss.showRssFeed(this.getAttribute("data-uid"));
+                            }
+                            return rssFeedRow;
+                        })());
+                    }
+                    
                 }
             }).send();
-		};
+        };
 
 
         return exports();
