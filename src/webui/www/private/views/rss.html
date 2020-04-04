@@ -37,11 +37,14 @@
                         <tbody id="rssFeedsViewBody"></tbody>
                     </table>
                 </td>
+                <td>
                     <table id="rssTorrentView">
                         <thead>
                             <td>Torrents</td>
                         </thead>
                         <tbody id="rssTorrentViewBody"> </tbody>
+                    </table>
+                </td>
                 <td>
                     <div id="rssDetailsView">
                     </div>    
@@ -64,6 +67,7 @@
                 init: init,
                 addRSSFeed: addRSSFeed,
                 showRssFeed: showRssFeed,
+                showUnreadRssFeed: showUnreadRssFeed,
                 showDetails: showDetails,
                 updateRssFeedList: updateRssFeedList
             };
@@ -73,6 +77,7 @@
 
         const init = function() {
             updateRssFeedList();
+            showUnreadRssFeed();
         };
         
         const addRSSFeed = function() {
@@ -87,7 +92,8 @@
                     noCache: true,
                     method: 'post',
                     data: {
-                        url: feedURL
+                        url: feedURL,
+                        path: ""
                     },
                     onFailure: function(response) {
                         if (response.status == 409) {
@@ -119,6 +125,26 @@
             });
         }
 
+        const showUnreadRssFeed = function() {
+            $('rssTorrentViewBody').empty();
+            for(let feedEntry in feedData) {
+                feedData[feedEntry].each(torrentEntry =>  {
+                    if (!torrentEntry.isRead){
+                        $('rssTorrentViewBody').append((() => {
+                            let rssTorrentRow = document.createElement('tr');
+                            rssTorrentRow.innerText = torrentEntry.title;
+                            rssTorrentRow.setAttribute("data-id", torrentEntry.id);
+                            rssTorrentRow.addClass("bold");
+                            rssTorrentRow.onclick = function() {
+                                qBittorrent.Rss.showDetails(feedEntry, torrentEntry.id);
+                            }
+                            return rssTorrentRow;
+                        })());
+                    }
+                });
+            }
+        }
+
         const showDetails = function(feedUid, articleID) {
             $('rssDetailsView').empty();
             let article = feedData[feedUid].filter(article => article.id == articleID)[0];
@@ -126,15 +152,19 @@
                 $('rssDetailsView').append((() => {
                     let torrentName = document.createElement('p');
                     torrentName.innerText = "Name: " + article.title;
+                    torrentName.setAttribute("id", "rssTorrentDetailsName");
                     return torrentName;
                 })());
                 $('rssDetailsView').append((() => {
                     let torrentDate = document.createElement('p');
                     torrentDate.innerText = "Date: " + article.date;
+                    torrentDate.setAttribute("id", "rssTorrentDetailsDate");
                     return torrentDate;
                 })());
                 //Strip script before interpreting html
-                $('rssDetailsView').append(document.createRange().createContextualFragment(article.description.stripScripts()));
+                let torrentDescription = document.createRange().createContextualFragment(
+                        "<div id=\"rssTorrentDetailsDescription\">" + article.description.stripScripts() + "</div>");
+                $('rssDetailsView').append(torrentDescription);
             }
         };
         
@@ -153,7 +183,6 @@
                     for(let feedEntry in response) {
                         $('rssFeedsViewBody').append((() => {
                             let rssFeedRow = document.createElement('tr');
-                            console.log(response[feedEntry].articles);
                             let numberOfUnread = response[feedEntry].articles.map(art => !art.isRead).filter(v => v).length;
                             rssFeedRow.innerText = (response[feedEntry].title  || response[feedEntry].url) + ' (' + numberOfUnread + ')';
                             rssFeedRow.setAttribute("data-uid", response[feedEntry].uid);
@@ -169,6 +198,19 @@
                             return rssFeedRow;
                         })());
                     }
+                    //unread entry
+                    $('rssFeedsViewBody').prepend((() => {
+                            let unreadRow = document.createElement('tr');
+                            let numberOfUnread = 0;
+                            for(let feedEntry in feedData) {
+                                numberOfUnread += feedData[feedEntry].map(art => !art.isRead).filter(v => v).length;
+                            }
+                            unreadRow.innerText = "Unread" + ' (' + numberOfUnread + ')';		
+                            unreadRow.onclick = function() {
+                                qBittorrent.Rss.showUnreadRssFeed("unread");
+                            }
+                            return unreadRow;
+                        })());
                     
                 }
             }).send();
