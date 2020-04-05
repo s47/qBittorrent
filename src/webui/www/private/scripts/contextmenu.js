@@ -39,7 +39,9 @@ window.qBittorrent.ContextMenu = (function() {
             TorrentsTableContextMenu: TorrentsTableContextMenu,
             CategoriesFilterContextMenu: CategoriesFilterContextMenu,
             TagsFilterContextMenu: TagsFilterContextMenu,
-            SearchPluginsTableContextMenu: SearchPluginsTableContextMenu
+            SearchPluginsTableContextMenu: SearchPluginsTableContextMenu,
+            RssFeedContextMenu: RssFeedContextMenu,
+            RssArticleContextMenu: RssArticleContextMenu
         };
     };
 
@@ -536,6 +538,14 @@ window.qBittorrent.ContextMenu = (function() {
 
             this.showItem('Uninstall');
         }
+    });
+
+    const RssFeedContextMenu = new Class({
+        Extends: ContextMenu
+    });
+
+    const RssArticleContextMenu = new Class({
+        Extends: ContextMenu
     });
 
     return exports();
