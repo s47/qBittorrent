@@ -541,7 +541,49 @@ window.qBittorrent.ContextMenu = (function() {
     });
 
     const RssFeedContextMenu = new Class({
-        Extends: ContextMenu
+        Extends: ContextMenu,
+        updateMenuItems: function() {
+            let selectedRows = rssFeedTable.selectedRowsIds();
+            if (selectedRows.length == 0) {
+                this.hideItem('update');
+                this.hideItem('markRead');
+                this.hideItem('rename');
+                this.hideItem('delete');
+                this.showItem('newSubscription');
+                this.showItem('newFolder');
+                this.showItem('updateAll');
+                this.hideItem('copyFeedURL');
+            } else if (selectedRows.length == 1) {
+                if (selectedRows[0] == 0) {
+                    this.showItem('update');
+                    this.showItem('markRead');
+                    this.hideItem('rename');
+                    this.hideItem('delete');
+                    this.showItem('newSubscription');
+                    this.hideItem('newFolder');
+                    this.hideItem('updateAll');
+                    this.hideItem('copyFeedURL');
+                } else {
+                    this.showItem('update');
+                    this.showItem('markRead');
+                    this.showItem('rename');
+                    this.showItem('delete');
+                    this.showItem('newSubscription');
+                    this.hideItem('newFolder');
+                    this.hideItem('updateAll');
+                    this.showItem('copyFeedURL');
+                }
+            } else {
+                this.showItem('update');
+                this.showItem('markRead');
+                this.hideItem('rename');
+                this.showItem('delete');
+                this.showItem('newSubscription');
+                this.hideItem('newFolder');
+                this.hideItem('updateAll');
+                this.showItem('copyFeedURL');
+            }
+        }
     });
 
     const RssArticleContextMenu = new Class({

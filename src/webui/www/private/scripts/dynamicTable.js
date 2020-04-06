@@ -45,7 +45,8 @@ window.qBittorrent.DynamicTable = (function() {
             SearchResultsTable: SearchResultsTable,
             SearchPluginsTable: SearchPluginsTable,
             TorrentTrackersTable: TorrentTrackersTable,
-            TorrentFilesTable: TorrentFilesTable
+            TorrentFilesTable: TorrentFilesTable,
+            RssFeedTable: RssFeedTable
         };
     };
 
@@ -1982,6 +1983,74 @@ window.qBittorrent.DynamicTable = (function() {
                 row.full_data.remaining = 0;
             else
                 row.full_data.remaining = (row.full_data.size * (1.0 - (row.full_data.progress / 100)));
+        }
+    });
+
+    const RssFeedTable = new Class({
+        Extends: DynamicTable,
+        initColumns: function() {
+            this.newColumn('name', '', 'QBT_TR(Rss feeds)QBT_TR[CONTEXT=RssReaderWidget]', 100, true);
+        },
+        setupHeaderMenu: function() {},
+        setupHeaderEvents: function() {},
+        updateHeader: function(header) {
+            const ths = header.getElements('th');
+
+            for (let i = 0; i < ths.length; ++i) {
+                const th = ths[i];
+                th._this = this;
+                th.setAttribute('title', this.columns[i].caption);
+                th.set('text', this.columns[i].caption);
+                th.setAttribute('style', 'width: ' + this.columns[i].width + '%;' + this.columns[i].style);
+                th.columnName = this.columns[i].name;
+                th.addClass('column_' + th.columnName);
+            }
+        },
+        updateColumn: function(columnName) {
+            const pos = this.getColumnPos(columnName);
+            const ths = this.hiddenTableHeader.getElements('th');
+            const fths = this.fixedTableHeader.getElements('th');
+            const style = 'width: ' + this.columns[pos].width + '%;' + this.columns[pos].style;
+
+            ths[pos].setAttribute('style', style);
+            fths[pos].setAttribute('style', style);
+
+            if (this.columns[pos].onResize !== null) {
+                this.columns[pos].onResize(columnName);
+            }
+        },
+        getFilteredAndSortedRows: function() {
+            const filteredRows = [];
+
+            const rows = this.rows.getValues();
+
+            for (let i = 1; i < rows.length; ++i) {
+                filteredRows.push(rows[i]);
+            }
+
+            filteredRows.sort((r1, r2) => r1.data.name.localeCompare(r2.data.name));
+            filteredRows.unshift(rows[0]);
+            return filteredRows;
+        },
+        selectRow: function(rowId) {
+            this.selectedRows.push(rowId);
+            this.setRowClass();
+            this.onSelectedRowChanged();
+
+            const rows = this.rows.getValues();
+            let uid = "";
+            for(let i = 0; i < rows.length; i++) {
+                if (rows[i].rowId == rowId) {
+                    uid = rows[i].full_data.dataUid;
+                    break;
+                }
+            }
+            
+            if (uid === "") {
+                qBittorrent.Rss.showUnreadRssFeed();
+            } else {
+                qBittorrent.Rss.showRssFeed(uid);
+            }
         }
     });
 
