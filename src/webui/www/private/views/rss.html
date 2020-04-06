@@ -90,7 +90,7 @@
     <li><a href="#newFolder"><img src="images/qbt-theme/folder-new.svg" alt="QBT_TR(New folder...)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(New folder...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
     <li class="separator"><a href="#updateAll"><img src="images/qbt-theme/view-refresh.svg" alt="QBT_TR(Update all feeds)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Update all feeds)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
 
-    <li class="separator"><a href="#copyFeedURL"><img src="images/qbt-theme/edit-copy.svg" alt="QBT_TR(Copy feed URL)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Copy feed URL)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
+    <li class="separator"><a href="#copyFeedURL" id="CopyFeedURL"><img src="images/qbt-theme/edit-copy.svg" alt="QBT_TR(Copy feed URL)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Copy feed URL)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
 </ul>
 
 <ul id="rssArticleMenu" class="contextMenu">
@@ -162,8 +162,7 @@
                     },
                     newSubscription: (el) => {addRSSFeed()},
                     newFolder: (el) => {console.log("[not implemented] folders are not implemnted");},
-                    newSubscription: (el) => {refreshAllFeeds()},
-                    copyFeedURL: (el) => {console.log("[not implemented] Copy is not implemented");},
+                    newSubscription: (el) => {refreshAllFeeds()}
                 },
                 offsets: {
                     x: -16,
@@ -181,6 +180,17 @@
                     rssFeedContextMenu.updateMenuItems();
                 }
             });
+
+            new ClipboardJS('#CopyFeedURL', {
+                text: () => {
+                    let joined = "";
+                    rssFeedTable.selectedRows.filter(e => e != 0).each(row => {
+                        joined += rssFeedTable.rows[row].full_data.dataUrl + '\n';
+                    });
+                    return joined.slice(0,-1);
+                }
+            });
+
 
             rssArticleContextMenu = new window.qBittorrent.ContextMenu.RssArticleContextMenu({
                 targets: '.rssArticleElement',
