@@ -544,7 +544,10 @@ window.qBittorrent.ContextMenu = (function() {
         Extends: ContextMenu,
         updateMenuItems: function() {
             let selectedRows = rssFeedTable.selectedRowsIds();
+            this.menu.getElement('a[href$=newSubscription]').parentNode.addClass('separator');
             if (selectedRows.length == 0) {
+                //remove seperator on top of newSubscription entry to avoid double line line
+                this.menu.getElement('a[href$=newSubscription]').parentNode.removeClass('separator');
                 this.hideItem('update');
                 this.hideItem('markRead');
                 this.hideItem('rename');

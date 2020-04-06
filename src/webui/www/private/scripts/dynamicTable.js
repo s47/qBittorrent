@@ -1993,32 +1993,6 @@ window.qBittorrent.DynamicTable = (function() {
         },
         setupHeaderMenu: function() {},
         setupHeaderEvents: function() {},
-        updateHeader: function(header) {
-            const ths = header.getElements('th');
-
-            for (let i = 0; i < ths.length; ++i) {
-                const th = ths[i];
-                th._this = this;
-                th.setAttribute('title', this.columns[i].caption);
-                th.set('text', this.columns[i].caption);
-                th.setAttribute('style', 'width: ' + this.columns[i].width + '%;' + this.columns[i].style);
-                th.columnName = this.columns[i].name;
-                th.addClass('column_' + th.columnName);
-            }
-        },
-        updateColumn: function(columnName) {
-            const pos = this.getColumnPos(columnName);
-            const ths = this.hiddenTableHeader.getElements('th');
-            const fths = this.fixedTableHeader.getElements('th');
-            const style = 'width: ' + this.columns[pos].width + '%;' + this.columns[pos].style;
-
-            ths[pos].setAttribute('style', style);
-            fths[pos].setAttribute('style', style);
-
-            if (this.columns[pos].onResize !== null) {
-                this.columns[pos].onResize(columnName);
-            }
-        },
         getFilteredAndSortedRows: function() {
             const filteredRows = [];
 

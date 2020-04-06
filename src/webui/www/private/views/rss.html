@@ -24,15 +24,6 @@
     .bold {
         font-weight: bold;
     }
-
-    .noselect {
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-}
 </style>
 
 <div id="rssView">
@@ -46,16 +37,16 @@
     <table id="rssConentView">
         <tbody id="rssTableBody">
             <tr id="rssTableRow">
-                <td id="rssFeedsRow" style="width:33%" class="noselect">
+                <td id="rssFeedsRow" style="width:33%">
                     <div id="rssFeedFixedHeaderDiv" class="dynamicTableFixedHeaderDiv">
-                        <table class="dynamicTable" style="position:relative; width:100%">
+                        <table class="dynamicTable unselectable" style="position:relative; width:100%">
                             <thead style="width:100%">
                                 <tr class="dynamicTableHeader" style="width:100%"></tr>
                             </thead>
                         </table>
                     </div>
                     <div id="rssFeedTableDiv" class="dynamicTableDiv">
-                        <table class="dynamicTable" style="width:100%">
+                        <table class="dynamicTable unselectable" style="width:100%">
                             <thead style="width:100%">
                                 <tr class="dynamicTableHeader" style="width:100%"></tr>
                             </thead>
@@ -127,7 +118,7 @@
 
         const init = function() {
             rssFeedContextMenu = new window.qBittorrent.ContextMenu.RssFeedContextMenu({
-                targets: '#rssFeedTableDiv',
+                targets: '.rssFeedContextMenuTarget',
                 menu: 'rssFeedMenu',
                 actions: {
                     update: (el) => {
@@ -169,6 +160,7 @@
                     y: -57
                 }
             });
+            rssFeedContextMenu.addTarget($('rssFeedTableDiv'));
             $('rssFeedTableDiv').addEventListener("click", function(e){
                 rssFeedTable.deselectAll();
                 rssFeedTable.deselectRow();
@@ -190,6 +182,7 @@
                     return joined.slice(0,-1);
                 }
             });
+            rssFeedTable.setup('rssFeedTableDiv', 'rssFeedFixedHeaderDiv', rssFeedContextMenu);
 
 
             rssArticleContextMenu = new window.qBittorrent.ContextMenu.RssArticleContextMenu({
@@ -441,9 +434,7 @@
                     }
                 }
             }).send();
-        };
-
-        rssFeedTable.setup('rssFeedTableDiv', 'rssFeedFixedHeaderDiv', rssFeedContextMenu);
+        };        
 
         return exports();
     })();
