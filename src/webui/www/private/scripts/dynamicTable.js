@@ -1989,7 +1989,9 @@ window.qBittorrent.DynamicTable = (function() {
     const RssFeedTable = new Class({
         Extends: DynamicTable,
         initColumns: function() {
-            this.newColumn('name', '', 'QBT_TR(Rss feeds)QBT_TR[CONTEXT=RssReaderWidget]', 100, true);
+            this.newColumn('state_icon', '', '', 30, true);
+            this.newColumn('name', '', 'QBT_TR(Rss feeds)QBT_TR[CONTEXT=RssReaderWidget]', -1, true);
+            this.columns['state_icon'].dataProperties[0] = '';
         },
         setupHeaderMenu: function() {},
         setupHeaderEvents: function() {},
@@ -2025,7 +2027,70 @@ window.qBittorrent.DynamicTable = (function() {
             } else {
                 qBittorrent.Rss.showRssFeed(uid);
             }
-        }
+        },
+        updateIcons: function() {
+            // state_icon
+            this.rows.each(row => {
+                const img_path = row.full_data.state_icon;
+                let td;
+                for(let i = 0; i < this.tableBody.rows.length; i++) {
+                    if (this.tableBody.rows[i].rowId == row.rowId) {
+                        td =  this.tableBody.rows[i].children[0];
+                        break;
+                    }
+                }
+                if (td.getChildren('img').length > 0) {
+                    const img = td.getChildren('img')[0];
+                    if (img.src.indexOf(img_path) < 0) {
+                        img.set('src', img_path);
+                        img.set('title', state);
+                    }
+                }
+                else {
+                    td.adopt(new Element('img', {
+                        'src': img_path,
+                        'class': 'stateIcon'
+                    }));
+                }
+            });
+        },
+        newColumn: function(name, style, caption, defaultWidth, defaultVisible) {
+            const column = {};
+            column['name'] = name;
+            column['title'] = name;
+            column['visible'] = defaultVisible;
+            column['force_hide'] = false;
+            column['caption'] = caption;
+            column['style'] = style;
+            if (defaultWidth != -1) {
+                column['width'] = defaultWidth;
+            }
+            
+            column['dataProperties'] = [name];
+            column['getRowValue'] = function(row, pos) {
+                if (pos === undefined)
+                    pos = 0;
+                return row['full_data'][this.dataProperties[pos]];
+            };
+            column['compareRows'] = function(row1, row2) {
+                if (this.getRowValue(row1) < this.getRowValue(row2))
+                    return -1;
+                else if (this.getRowValue(row1) > this.getRowValue(row2))
+                    return 1;
+                else return 0;
+            };
+            column['updateTd'] = function(td, row) {
+                const value = this.getRowValue(row)
+                td.set('text', value);
+                td.set('title', value);
+            };
+            column['onResize'] = null;
+            this.columns.push(column);
+            this.columns[name] = column;
+
+            this.hiddenTableHeader.appendChild(new Element('th'));
+            this.fixedTableHeader.appendChild(new Element('th'));
+        },
     });
 
     return exports();

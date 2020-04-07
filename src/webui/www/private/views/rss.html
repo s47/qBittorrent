@@ -320,7 +320,14 @@
                     for(let feedEntry in response) {
                         feedPathMap.set(response[feedEntry].uid, feedEntry);
                         let numberOfUnread = response[feedEntry].articles.map(art => !art.isRead).filter(v => v).length;
+                        let statusImage = "images/qbt-theme/application-rss+xml.svg";
+                        if (response[feedEntry].hasError)
+                            statusImage = "images/qbt-theme/unavailable.svg";
+                        if (response[feedEntry].isLoading)
+                            statusImage = "images/skin/spinner.gif";
+                        
                         rssFeedTable.updateRowData({
+                            state_icon: statusImage,
                             rowId: (rowCount+1),
                             name: feedEntry + ' (' + numberOfUnread + ')',
                             dataUid: response[feedEntry].uid,
@@ -328,13 +335,6 @@
                             dataPath: feedEntry
                         });
                         feedData[response[feedEntry].uid] = response[feedEntry].articles;
-                        /*  rssFeedRow.addClass("rssFeedElement");
-                            rssFeedContextMenu.addTarget(rssFeedRow);
-                            if (response[feedEntry].hasError) {
-                            }
-                            if (response[feedEntry].isLoading) {
-                            }						
-                        */
                         rowCount++;
                     }
                     //unread entry
@@ -343,6 +343,7 @@
                         numberOfUnread += feedData[feedEntry].map(art => !art.isRead).filter(v => v).length;
                     }
                     rssFeedTable.updateRowData({
+                        state_icon: "images/qbt-theme/mail-folder-inbox.svg",
                         rowId: 0,
                         name: 'Unread' + ' (' + numberOfUnread + ')',
                         dataUid: "",
@@ -350,6 +351,7 @@
                         dataPath: ""
                     });
                     rssFeedTable.updateTable(false);
+                    rssFeedTable.updateIcons();
                 }
             }).send();
         };
