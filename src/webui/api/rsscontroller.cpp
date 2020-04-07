@@ -32,6 +32,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
+#include "base/rss/rss_article.h"
 #include "base/rss/rss_autodownloader.h"
 #include "base/rss/rss_autodownloadrule.h"
 #include "base/rss/rss_feed.h"
