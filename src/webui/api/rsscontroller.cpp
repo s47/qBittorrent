@@ -91,6 +91,16 @@ void RSSController::itemsAction()
     setResult(jsonVal.toObject());
 }
 
+void RSSController::markAsReadAction()
+{
+    requireParams({"itemPath"});
+
+    const QString itemPath {params()["itemPath"]};
+    RSS::Item *item = RSS::Session::instance()->itemByPath(itemPath);
+    if (item)
+        item->markAsRead();
+}
+
 void RSSController::refreshItemAction()
 {
     requireParams({"itemPath"});
