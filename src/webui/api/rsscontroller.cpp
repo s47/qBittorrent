@@ -34,6 +34,7 @@
 
 #include "base/rss/rss_autodownloader.h"
 #include "base/rss/rss_autodownloadrule.h"
+#include "base/rss/rss_feed.h"
 #include "base/rss/rss_folder.h"
 #include "base/rss/rss_session.h"
 #include "base/utils/string.h"
@@ -91,7 +92,7 @@ void RSSController::itemsAction()
     setResult(jsonVal.toObject());
 }
 
-void RSSController::markAsReadAction()
+void RSSController::markItemAsReadAction()
 {
     requireParams({"itemPath"});
 
@@ -99,6 +100,20 @@ void RSSController::markAsReadAction()
     RSS::Item *item = RSS::Session::instance()->itemByPath(itemPath);
     if (item)
         item->markAsRead();
+}
+
+void RSSController::markArticleAsReadAction()
+{
+    requireParams({"itemPath", "articleId"});
+
+    const QString itemPath {params()["itemPath"]};
+    const QString articleId {params()["articleId"]};
+
+    RSS::Feed *item = (RSS::Feed*) RSS::Session::instance()->itemByPath(itemPath);
+    if (item) {
+        RSS::Article *article = item->articleByGUID(articleId);
+        article->markAsRead();
+    }
 }
 
 void RSSController::refreshItemAction()
