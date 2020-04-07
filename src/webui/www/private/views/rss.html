@@ -118,7 +118,8 @@
                 refreshAllFeeds: refreshAllFeeds,
                 markItemAsRead: markItemAsRead,
                 markArticleAsRead: markArticleAsRead,
-                markSelectedAsRead: markSelectedAsRead
+                markSelectedAsRead: markSelectedAsRead,
+                openRssDownloader: openRssDownloader
             };
         };
 
@@ -261,7 +262,7 @@
             });
             $('rssDetailsView').empty();
             rssArticleTable.updateTable(false);
-        }
+        };
 
         const showUnreadRssFeed = function() {
             rssArticleTable.clear();
@@ -284,7 +285,7 @@
             });
             $('rssDetailsView').empty();
             rssArticleTable.updateTable(false);
-        }
+        };
 
         const showDetails = function(feedUid, articleID) {
             markArticleAsRead(feedPathMap.get(feedUid), articleID);
@@ -324,24 +325,37 @@
                     feedData = {};
                     feedPathMap = new Map();
                     let rowCount = 0;
-                    for(let feedEntry in response) {
-                        feedPathMap.set(response[feedEntry].uid, feedEntry);
-                        let numberOfUnread = response[feedEntry].articles.map(art => !art.isRead).filter(v => v).length;
+                    //flatten folder structure
+                    let flattenedResp = {};
+                    function recFlatten(current, fullName = '') {
+                        if (current.uid !== undefined) {
+                            flattenedResp[fullName] = current;
+                        } else {
+                            for (let child in current) {
+                                recFlatten(current[child], fullName ? fullName + "\\" + child : child);
+                            }
+                        }
+                    }
+                    recFlatten(response);
+
+                    for(let feedEntry in flattenedResp) {
+                        feedPathMap.set(flattenedResp[feedEntry].uid, feedEntry);
+                        let numberOfUnread = flattenedResp[feedEntry].articles.map(art => !art.isRead).filter(v => v).length;
                         let statusImage = "images/qbt-theme/application-rss+xml.svg";
-                        if (response[feedEntry].hasError)
+                        if (flattenedResp[feedEntry].hasError)
                             statusImage = "images/qbt-theme/unavailable.svg";
-                        if (response[feedEntry].isLoading)
+                        if (flattenedResp[feedEntry].isLoading)
                             statusImage = "images/skin/spinner.gif";
                         
                         rssFeedTable.updateRowData({
                             state_icon: statusImage,
                             rowId: (rowCount+1),
                             name: feedEntry + ' (' + numberOfUnread + ')',
-                            dataUid: response[feedEntry].uid,
-                            dataUrl: response[feedEntry].url,
+                            dataUid: flattenedResp[feedEntry].uid,
+                            dataUrl: flattenedResp[feedEntry].url,
                             dataPath: feedEntry
                         });
-                        feedData[response[feedEntry].uid] = response[feedEntry].articles;
+                        feedData[flattenedResp[feedEntry].uid] = flattenedResp[feedEntry].articles;
                         rowCount++;
                     }
                     //unread entry
@@ -484,7 +498,7 @@
                     }
                 }
             }).send();
-        }
+        };
         
         const markSelectedAsRead = function() {
             if (rssFeedTable.selectedRows.contains(0)) {
@@ -496,6 +510,10 @@
                     markItemAsRead(rssFeedTable.rows[row].full_data.dataPath);
                 });
             }
+        };
+
+        const openRssDownloader = function() {
+
         };
 
         return exports();
