@@ -50,6 +50,7 @@
         <file>private/views/preferencesToolbar.html</file>
         <file>private/views/properties.html</file>
         <file>private/views/propertiesToolbar.html</file>
+        <file>private/views/rss.html</file>
         <file>private/views/search.html</file>
         <file>private/views/searchplugins.html</file>
         <file>private/views/statistics.html</file>
