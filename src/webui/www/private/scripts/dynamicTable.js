@@ -2122,12 +2122,15 @@ window.qBittorrent.DynamicTable = (function() {
                 if (rows[i].rowId == rowId) {
                     articleId = rows[i].full_data.dataId;
                     feedUid = rows[i].full_data.feedUid;
+                    this.tableBody.rows[rows[i].rowId].removeClass("unreadArticle");
                     break;
                 }
             }
             qBittorrent.Rss.showDetails(feedUid, articleId);
         },
         setupTr: function(tr) {
+            if(!this.rows[tr.rowId].full_data.isRead)
+                tr.addClass("unreadArticle");
             tr.addEvent('dblclick', function(e) {
                 showDownloadPage([this._this.rows.get(this.rowId).full_data.torrentURL]);
                 return true;

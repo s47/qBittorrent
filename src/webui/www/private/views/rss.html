@@ -2,7 +2,7 @@
     #rssView {
         padding: 20px;
     }
-    
+
     #rssConentView {
         width: 100%;
     }
@@ -10,7 +10,7 @@
     #rssFeedFixedHeaderDiv .dynamicTableHeader,  #rssArticleFixedHeaderDiv .dynamicTableHeader{
         cursor: default;
     }
-    
+
     #rssTableBody {
         vertical-align: top;
     }
@@ -18,18 +18,18 @@
     .alignRight {
         float: right;
     }
-    
-    .bold {
-        font-weight: bold;
+
+    .unreadArticle {
+        color: blue;
     }
 </style>
 
 <div id="rssView">
     <div id="rssButtonBar" style="overflow: hidden; height: 30px;">
         <button id="newSubscriptionButton" onclick="qBittorrent.Rss.addRSSFeed()">QBT_TR(New subscription)QBT_TR[CONTEXT=RssReaderWidget]</button>
-        <button id="markReadButton" onclick="qBittorrent.Rss">QBT_TR(Mark items read)QBT_TR[CONTEXT=RssReaderWidget]</button>
+        <button id="markReadButton" onclick="qBittorrent.Rss.markSelectedAsRead()">QBT_TR(Mark items read)QBT_TR[CONTEXT=RssReaderWidget]</button>
         <button id="updateAllButton" onclick="qBittorrent.Rss.refreshAllFeeds()">QBT_TR(Update all)QBT_TR[CONTEXT=RssReaderWidget]</button>
-            
+        
         <button id="rssDownloaderButton" class="alignRight" onclick="qBittorrent.Rss.openRssDownloader()">QBT_TR(RSS Downloader...)QBT_TR[CONTEXT=RssReaderWidget]</button>
     </div>
     <table id="rssConentView">
@@ -115,7 +115,10 @@
                 showDetails: showDetails,
                 updateRssFeedList: updateRssFeedList,
                 refreshFeed: refreshFeed,
-                refreshAllFeeds: refreshAllFeeds
+                refreshAllFeeds: refreshAllFeeds,
+                markItemAsRead: markItemAsRead,
+                markArticleAsRead: markArticleAsRead,
+                markSelectedAsRead: markSelectedAsRead
             };
         };
 
@@ -138,15 +141,7 @@
                             });
                         }
                     },
-                    markRead: (el) => {
-                        if (rssFeedTable.selectedRows.contains(0)) {
-                            console.log("[not implemented] mark all read");
-                        } else {
-                            rssFeedTable.selectedRows.each(row => {
-                                console.log("[not implemented] mark as read: " + rssFeedTable.rows[row].full_data.dataUid);
-                            });
-                        }
-                    },
+                    markRead: markSelectedAsRead,
                     rename: (el) => {
                         rssFeedTable.selectedRows.filter(e => e != 0).each(row => {
                             moveItem(rssFeedTable.rows[row].full_data.dataPath);
@@ -292,6 +287,7 @@
         }
 
         const showDetails = function(feedUid, articleID) {
+            markArticleAsRead(feedPathMap.get(feedUid), articleID);
             $('rssDetailsView').empty();
             let article = feedData[feedUid].filter(article => article.id == articleID)[0];
             if (article) {
@@ -418,7 +414,7 @@
                         destPath: newPath
                     },
                     onSuccess: function(response) {
-                        updateRssFeedList()
+                        updateRssFeedList();
                     },
                     onFailure: function(response) {
                         if (response.status == 409) {
@@ -436,10 +432,10 @@
                 noCache: true,
                 method: 'post',
                 data: {
-                    path: path
+                    itemPath: path
                 },
                 onSuccess: function(response) {
-                    updateRssFeedList()
+                    updateRssFeedList();
                 },
                 onFailure: function(response) {
                     if (response.status == 409) {
@@ -447,7 +443,60 @@
                     }
                 }
             }).send();
-        };        
+        };
+
+        const markItemAsRead = function(path) {
+            const url = new URI('api/v2/rss/markItemAsRead');
+            new Request({
+                url: url,
+                noCache: true,
+                method: 'post',
+                data: {
+                    path: path
+                },
+                onSuccess: function(response) {
+                    updateRssFeedList();
+                },
+                onFailure: function(response) {
+                    if (response.status == 409) {
+                        alert(response.responseText);
+                    }
+                }
+            }).send();
+        };
+
+        const markArticleAsRead = function(path, id) {
+            const url = new URI('api/v2/rss/markArticleAsRead');
+            new Request({
+                url: url,
+                noCache: true,
+                method: 'post',
+                data: {
+                    itemPath: path,
+                    articleId: id
+                },
+                onSuccess: function(response) {
+                    updateRssFeedList();
+                },
+                onFailure: function(response) {
+                    if (response.status == 409) {
+                        alert(response.responseText);
+                    }
+                }
+            }).send();
+        }
+        
+        const markSelectedAsRead = function() {
+            if (rssFeedTable.selectedRows.contains(0)) {
+                rssFeedTable.rows.filter(e => e.rowId != 0).each(row => {
+                    markItemAsRead(row.full_data.dataPath);
+                });
+            } else {
+                rssFeedTable.selectedRows.each(row => {
+                    markItemAsRead(rssFeedTable.rows[row].full_data.dataPath);
+                });
+            }
+        };
 
         return exports();
     })();
