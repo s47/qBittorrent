@@ -46,7 +46,8 @@ window.qBittorrent.DynamicTable = (function() {
             SearchPluginsTable: SearchPluginsTable,
             TorrentTrackersTable: TorrentTrackersTable,
             TorrentFilesTable: TorrentFilesTable,
-            RssFeedTable: RssFeedTable
+            RssFeedTable: RssFeedTable,
+            RssArticleTable: RssArticleTable
         };
     };
 
@@ -1990,8 +1991,8 @@ window.qBittorrent.DynamicTable = (function() {
         Extends: DynamicTable,
         initColumns: function() {
             this.newColumn('state_icon', '', '', 30, true);
-            this.newColumn('name', '', 'QBT_TR(Rss feeds)QBT_TR[CONTEXT=RssReaderWidget]', -1, true);
             this.columns['state_icon'].dataProperties[0] = '';
+            this.newColumn('name', '', 'QBT_TR(Rss feeds)QBT_TR[CONTEXT=RssReaderWidget]', -1, true);
         },
         setupHeaderMenu: function() {},
         setupHeaderEvents: function() {},
@@ -2090,7 +2091,86 @@ window.qBittorrent.DynamicTable = (function() {
 
             this.hiddenTableHeader.appendChild(new Element('th'));
             this.fixedTableHeader.appendChild(new Element('th'));
+        }
+    });
+
+
+    const RssArticleTable = new Class({
+        Extends: DynamicTable,
+        initColumns: function() {
+            this.newColumn('name', '', 'QBT_TR(Torrents:)QBT_TR[CONTEXT=RssReaderWidget]', -1, true);
         },
+        setupHeaderMenu: function() {},
+        setupHeaderEvents: function() {},
+        getFilteredAndSortedRows: function() {
+            const filteredRows = [];
+            const rows = this.rows.getValues();
+            for (let i = 0; i < rows.length; ++i) {
+                filteredRows.push(rows[i]);
+            }
+            return filteredRows;
+        },
+        selectRow: function(rowId) {
+            this.selectedRows.push(rowId);
+            this.setRowClass();
+            this.onSelectedRowChanged();
+
+            const rows = this.rows.getValues();
+            let articleId = "";
+            let feedUid = "";
+            for(let i = 0; i < rows.length; i++) {
+                if (rows[i].rowId == rowId) {
+                    articleId = rows[i].full_data.dataId;
+                    feedUid = rows[i].full_data.feedUid;
+                    break;
+                }
+            }
+            qBittorrent.Rss.showDetails(feedUid, articleId);
+        },
+        setupTr: function(tr) {
+            tr.addEvent('dblclick', function(e) {
+                showDownloadPage([this._this.rows.get(this.rowId).full_data.torrentURL]);
+                return true;
+            });
+            tr.addClass("torrentsTableContextMenuTarget");
+        },
+        newColumn: function(name, style, caption, defaultWidth, defaultVisible) {
+            const column = {};
+            column['name'] = name;
+            column['title'] = name;
+            column['visible'] = defaultVisible;
+            column['force_hide'] = false;
+            column['caption'] = caption;
+            column['style'] = style;
+            if (defaultWidth != -1) {
+                column['width'] = defaultWidth;
+            }
+            
+            column['dataProperties'] = [name];
+            column['getRowValue'] = function(row, pos) {
+                if (pos === undefined)
+                    pos = 0;
+                return row['full_data'][this.dataProperties[pos]];
+            };
+            column['compareRows'] = function(row1, row2) {
+                if (this.getRowValue(row1) < this.getRowValue(row2))
+                    return -1;
+                else if (this.getRowValue(row1) > this.getRowValue(row2))
+                    return 1;
+                else return 0;
+            };
+            column['updateTd'] = function(td, row) {
+                const value = this.getRowValue(row)
+                td.set('text', value);
+                td.set('title', value);
+            };
+            column['onResize'] = null;
+            this.columns.push(column);
+            this.columns[name] = column;
+
+            this.hiddenTableHeader.appendChild(new Element('th'));
+            this.fixedTableHeader.appendChild(new Element('th'));
+        }
     });
 
     return exports();

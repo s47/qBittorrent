@@ -1,15 +1,13 @@
 <style>
     #rssView {
-        margin: 20px;
-        height: 100%;
+        padding: 20px;
     }
     
     #rssConentView {
         width: 100%;
-        height: 100%;
     }
 
-    #rssFeedFixedHeaderDiv .dynamicTableHeader {
+    #rssFeedFixedHeaderDiv .dynamicTableHeader,  #rssArticleFixedHeaderDiv .dynamicTableHeader{
         cursor: default;
     }
     
@@ -54,15 +52,24 @@
                         </table>
                     </div>
                 </td>
-                <td>
-                    <table id="rssTorrentView">
-                        <thead>
-                            <td>Torrents</td>
-                        </thead>
-                        <tbody id="rssTorrentViewBody"></tbody>
-                    </table>
+                <td id="rssArticleRow" style="width:33%">
+                    <div id="rssArticleFixedHeaderDiv" class="dynamicTableFixedHeaderDiv">
+                        <table class="dynamicTable unselectable" style="position:relative; width:100%">
+                            <thead style="width:100%">
+                                <tr class="dynamicTableHeader" style="width:100%"></tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div id="rssArticleTableDiv" class="dynamicTableDiv">
+                        <table class="dynamicTable unselectable" style="width:100%">
+                            <thead style="width:100%">
+                                <tr class="dynamicTableHeader" style="width:100%"></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </td>
-                <td>
+                <td id="rssDetailsRow">
                     <div id="rssDetailsView">
                     </div>    
                 </td>
@@ -96,6 +103,7 @@
         window.qBittorrent = {};
     }
     let rssFeedTable = new window.qBittorrent.DynamicTable.RssFeedTable();
+    let rssArticleTable = new window.qBittorrent.DynamicTable.RssArticleTable();
 
     window.qBittorrent.Rss = (function() {
         const exports = function() {
@@ -160,7 +168,9 @@
                     y: -57
                 }
             });
+            
             rssFeedContextMenu.addTarget($('rssFeedTableDiv'));
+            //deselect feed when clicking on empty part of table
             $('rssFeedTableDiv').addEventListener("click", function(e){
                 rssFeedTable.deselectAll();
                 rssFeedTable.deselectRow();
@@ -190,19 +200,27 @@
                 menu: 'rssArticleMenu',
                 actions: {
                     Download: function(el) {
-                        showDownloadPage([feedData[el.getAttribute("feed-uid")]
-                            .filter(e => e.id = el.getAttribute("data-id"))[0].torrentURL]);
+                        let dlString = "";
+                        rssArticleTable.selectedRows.each(row => {
+                            let dataEntry = rssArticleTable.rows[row].full_data;
+                            dlString += dataEntry.torrentURL + "\n";
+                        });
+                        showDownloadPage([dlString]);
                         },
                     OpenNews: function(el) {
-                        window.open(feedData[el.getAttribute("feed-uid")]
-                            .filter(e => e.id = el.getAttribute("data-id"))[0].link);
+                        rssArticleTable.selectedRows.each(row => {
+                            let dataEntry = rssArticleTable.rows[row].full_data;
+                            let article = feedData[dataEntry.feedUid].filter(e => e.id == dataEntry.dataId)[0];
+                            window.open(article.link);
+                        });
                     }
                 },
                 offsets: {
-                    x: -15,
-                    y: -53
+                    x: -16,
+                    y: -57
                 }
             });
+            rssArticleTable.setup('rssArticleTableDiv', 'rssArticleFixedHeaderDiv', rssArticleContextMenu);
             updateRssFeedList();
         };
 
@@ -233,52 +251,45 @@
         };
         
         const showRssFeed = function(feedUid) {
-            $('rssTorrentViewBody').empty();
+            rssArticleTable.clear();
+            let rowCount = 0;
             feedData[feedUid].sort((e1, e2) => new Date(e2.date) - new Date(e1.date))
                 .each(torrentEntry => {
-                $('rssTorrentViewBody').append((() => {
-                    let rssTorrentRow = document.createElement('tr');
-                    rssTorrentRow.innerText = torrentEntry.title;
-                    rssTorrentRow.setAttribute("feed-uid", feedUid);
-                    rssTorrentRow.setAttribute("data-id", torrentEntry.id);
-                    rssTorrentRow.addClass("rssArticleElement");
-                    rssArticleContextMenu.addTarget(rssTorrentRow);
-                    if (!torrentEntry.isRead){
-                        rssTorrentRow.addClass("bold");
-                    }
-                    rssTorrentRow.onclick = function() {
-                        qBittorrent.Rss.showDetails(feedUid, torrentEntry.id);
-                    }
-                    return rssTorrentRow;
-                })());
+                rssArticleTable.updateRowData({
+	                rowId: rowCount++,
+                    name: torrentEntry.title,
+                    feedUid: feedUid,
+                    dataId: torrentEntry.id,
+                    torrentURL: torrentEntry.torrentURL,
+                    isRead: torrentEntry.isRead
+                });
             });
+            $('rssDetailsView').empty();
+            rssArticleTable.updateTable(false);
         }
 
         const showUnreadRssFeed = function() {
-            $('rssTorrentViewBody').empty();
+            rssArticleTable.clear();
+            let rowCount = 0;
             let unreadFeed = [];
             for(let feedEntry in feedData) {
                 unreadFeed.append(feedData[feedEntry].filter(e => !e.isRead)
                     .map(f => {f.feedUid = feedEntry; return f;}));
             }
-            unreadFeed.sort((e1, e2) => new Date(e2.date) - new Date(e1.date));
-
-            unreadFeed.each(torrentEntry =>  {
-                $('rssTorrentViewBody').append((() => {
-                    let rssTorrentRow = document.createElement('tr');
-                    rssTorrentRow.innerText = torrentEntry.title;
-                    rssTorrentRow.setAttribute("feed-uid", torrentEntry.feedUid);
-                    rssTorrentRow.setAttribute("data-id", torrentEntry.id);
-                    rssTorrentRow.addClass("rssArticleElement");
-                    rssArticleContextMenu.addTarget(rssTorrentRow);
-                    rssTorrentRow.addClass("bold");
-                    rssTorrentRow.onclick = function() {
-                        qBittorrent.Rss.showDetails(torrentEntry.feedUid, torrentEntry.id);
-                    }
-                    return rssTorrentRow;
-                })());
+            
+            unreadFeed.sort((e1, e2) => new Date(e2.date) - new Date(e1.date))
+                .each(torrentEntry =>  {
+                rssArticleTable.updateRowData({
+	                rowId: rowCount++,
+                    name: torrentEntry.title,
+                    feedUid: torrentEntry.feedUid,
+                    dataId: torrentEntry.id,
+                    isRead: false
+                });
             });
-        };
+            $('rssDetailsView').empty();
+            rssArticleTable.updateTable(false);
+        }
 
         const showDetails = function(feedUid, articleID) {
             $('rssDetailsView').empty();
