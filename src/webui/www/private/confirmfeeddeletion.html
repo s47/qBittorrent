@@ -30,8 +30,10 @@
                         },
                         onComplete: function(response) {
                             ++completionCount;
-                            if (completionCount == paths.length)
+                            if (completionCount == paths.length) {
+                                window.parent.qBittorrent.Rss.updateRssFeedList();
                                 window.parent.closeWindows();
+                            }
                         }
                     }).send();
                 });

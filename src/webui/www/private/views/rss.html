@@ -327,14 +327,14 @@
                     for (let feedEntry in flattenedResp) {
                         feedPathMap.set(flattenedResp[feedEntry].uid, feedEntry);
                         let numberOfUnread = flattenedResp[feedEntry].articles.map(art => !art.isRead).filter(v => v).length;
-                        let statusImage = "images/qbt-theme/application-rss+xml.svg";
+                        let status = "default";
                         if (flattenedResp[feedEntry].hasError)
-                            statusImage = "images/qbt-theme/unavailable.svg";
+                        status = "hasError";
                         if (flattenedResp[feedEntry].isLoading)
-                            statusImage = "images/skin/spinner.gif";
+                        status = "isLoading";
                         
                         rssFeedTable.updateRowData({
-                            state_icon: statusImage,
+                            status: status,
                             rowId: (rowCount+1),
                             name: feedEntry + ' (' + numberOfUnread + ')',
                             dataUid: flattenedResp[feedEntry].uid,
@@ -350,7 +350,7 @@
                         numberOfUnread += feedData[feedEntry].map(art => !art.isRead).filter(v => v).length;
                     }
                     rssFeedTable.updateRowData({
-                        state_icon: "images/qbt-theme/mail-folder-inbox.svg",
+                        status: "unread",
                         rowId: 0,
                         name: 'Unread' + ' (' + numberOfUnread + ')',
                         dataUid: "",
@@ -363,41 +363,35 @@
             }).send();
         };
 
-        const refreshFeed = function(feedUid, callback = () => {}) {
-            const url = new URI('api/v2/rss/refreshItem');
+        const refreshFeed = function(feedUid) {
+            //set icon to loading
+            for (let rowId in rssFeedTable.rows) {
+                let row = rssFeedTable.rows[rowId];
+                if (row.full_data.dataUid == feedUid) {
+                    row.full_data.status = "isLoading";
+                    break;
+                }
+            }
+            rssFeedTable.updateIcons();
+
             new Request({
-                url: url,
+                url: 'api/v2/rss/refreshItem',
                 noCache: true,
                 method: 'post',
                 data: {
                     itemPath: feedPathMap.get(feedUid)
                 },
-                onSuccess: function(response) {
-                    callback(0);
-                },
                 onFailure: function(response) {
-                    callback(1);
+                    if (response.status == 409)
+                        alert(response.responseText);
                 }
             }).send();
         };
 
         const refreshAllFeeds = function() {
-            var promises = [];
-            for (let feedEntry in feedData) {
-                promises.push(new Promise(function(resolve, reject) {
-                    refreshFeed(feedEntry, r => {
-                        if (r == 0)
-                            resolve();
-                        else
-                            reject();
-                    });
-                }));
-            }
-            Promise.all(promises).then(async function() {
-                //needs to be replaced by auto reload
-                await new Promise((e) => {setTimeout(e, 1000);});
-                updateRssFeedList();
-            });
+            for (let feedEntry in feedData)
+                refreshFeed(feedEntry);
+            rssFeedTable.updateRowData
         };
 
         const moveItem = function(oldPath) {
@@ -432,16 +426,47 @@
         };
 
         const markItemAsRead = function(path) {
-            const url = new URI('api/v2/rss/markItemAsRead');
+            //feed data mark as read
+            for (let feed in feedData) {
+                if (feedPathMap.get(feed) == path) {
+                    feedData[feed].each(el => {
+                        el.isRead = true;
+                    })
+                }
+            }
+
+            //css mark as read
+            rssArticleTable.rows.each(el => {
+                el.full_data.isRead = true;
+            });
+            rssArticleTable.updateTable(false);
+
+            //update feed display name
+            rssFeedTable.rows.filter(el => el.rowId != 0)
+                .each(row => {
+                if (row.full_data.dataPath == path) {
+                    row.full_data.name = path + " (0)";
+                    row.data.name = path + " (0)";
+                }
+            });
+            //update total unread count
+            let numberOfUnread = 0;
+            for (let feedEntry in feedData) {
+                numberOfUnread += feedData[feedEntry].map(art => !art.isRead).filter(v => v).length;
+            }
+            rssFeedTable.updateRowData({
+                rowId: 0,
+                name: 'Unread' + ' (' + numberOfUnread + ')',
+            });
+            rssFeedTable.updateTable(false);
+
+            //send request
             new Request({
-                url: url,
+                url: 'api/v2/rss/markItemAsRead',
                 noCache: true,
                 method: 'post',
                 data: {
                     path: path
-                },
-                onSuccess: function(response) {
-                    updateRssFeedList();
                 },
                 onFailure: function(response) {
                     if (response.status == 409)
@@ -451,17 +476,47 @@
         };
 
         const markArticleAsRead = function(path, id) {
-            const url = new URI('api/v2/rss/markArticleAsRead');
+            //find row
+            let rowId, name, uid;
+            rssFeedTable.rows.filter(el => el.rowId != 0)
+                .each(row => {
+                if (row.full_data.dataPath == path) {
+                    rowId = row.full_data.rowId;
+                    name = row.full_data.dataPath;
+                    uid = row.full_data.dataUid;
+                }
+            });
+            //update feed data
+            feedData[uid].each(article => {
+                if (article.id == id) 
+                    article.isRead = true;
+            });
+
+            //update feed containing article
+            let numberOfUnread = feedData[uid].map(art => !art.isRead).filter(v => v).length;
+            rssFeedTable.updateRowData({
+                rowId: rowId,
+                name:  name + ' (' + numberOfUnread + ')',
+            });
+
+            //update total unread count
+            let numberOfTotalUnread = 0;
+            for (let feedEntry in feedData) {
+                numberOfTotalUnread += feedData[feedEntry].map(art => !art.isRead).filter(v => v).length;
+            }
+            rssFeedTable.updateRowData({
+                rowId: 0,
+                name: 'Unread' + ' (' + numberOfTotalUnread + ')',
+            });
+            rssFeedTable.updateTable(false);
+
             new Request({
-                url: url,
+                url: 'api/v2/rss/markArticleAsRead',
                 noCache: true,
                 method: 'post',
                 data: {
                     itemPath: path,
                     articleId: id
-                },
-                onSuccess: function(response) {
-                    updateRssFeedList();
                 },
                 onFailure: function(response) {
                     if (response.status == 409)

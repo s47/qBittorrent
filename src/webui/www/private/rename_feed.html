@@ -60,6 +60,7 @@
                         destPath: newPath
                     },
                     onSuccess: function(response) {
+                        window.parent.qBittorrent.Rss.updateRssFeedList();
                         window.parent.closeWindows();
                     },
                     onFailure: function(response) {
