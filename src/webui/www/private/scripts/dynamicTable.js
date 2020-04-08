@@ -1854,7 +1854,7 @@ window.qBittorrent.DynamicTable = (function() {
                 if (tr.hasClass("invisible"))
                     return;
 
-                if (addClass){
+                if (addClass) {
                     tr.addClass("alt");
                     tr.removeClass("nonAlt");
                 }
@@ -2036,7 +2036,6 @@ window.qBittorrent.DynamicTable = (function() {
             });
         },
         updateIcons: function() {
-
             // state_icon
             this.rows.each(row => {
                 let img_path;

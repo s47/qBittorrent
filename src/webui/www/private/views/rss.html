@@ -22,9 +22,16 @@
     .unreadArticle {
         color: blue;
     }
+    
+    #rssFetchingDisabled {
+        color: red;
+        font-style: italic;
+        margin-bottom: 10px;
+    }
 </style>
 
 <div id="rssView">
+    <div id="rssFetchingDisabled" class="invisible">QBT_TR(Fetching of RSS feeds is disabled now! You can enable it in application settings.)QBT_TR[CONTEXT=RssReaderWidget]</div>
     <div id="rssButtonBar" style="overflow: hidden; height: 30px;">
         <button id="newSubscriptionButton" onclick="qBittorrent.Rss.addRSSFeed()">QBT_TR(New subscription)QBT_TR[CONTEXT=RssReaderWidget]</button>
         <button id="markReadButton" onclick="qBittorrent.Rss.markSelectedAsRead()">QBT_TR(Mark items read)QBT_TR[CONTEXT=RssReaderWidget]</button>
@@ -131,6 +138,19 @@
         let rssArticleContextMenu;
 
         const init = function() {
+            new Request.JSON({
+                url: 'api/v2/app/preferences',
+                method: 'get',
+                noCache: true,
+                onFailure: function() {
+                    alert("Could not contact qBittorrent");
+                },
+                onSuccess: function(pref) {
+                    if (!pref.rss_processing_enabled)
+                        $('rssFetchingDisabled').removeClass('invisible');
+                }
+            }).send();
+            
             rssFeedContextMenu = new window.qBittorrent.ContextMenu.RssFeedContextMenu({
                 targets: '.rssFeedContextMenuTarget',
                 menu: 'rssFeedMenu',
@@ -167,11 +187,11 @@
             
             rssFeedContextMenu.addTarget($('rssFeedTableDiv'));
             //deselect feed when clicking on empty part of table
-            $('rssFeedTableDiv').addEventListener("click", function(e){
+            $('rssFeedTableDiv').addEventListener("click", function(e) {
                 rssFeedTable.deselectAll();
                 rssFeedTable.deselectRow();
             });
-            $('rssFeedTableDiv').addEventListener("contextmenu", function(e){
+            $('rssFeedTableDiv').addEventListener("contextmenu", function(e) {
                 if (e.toElement.nodeName == "DIV") {
                     rssFeedTable.deselectAll();
                     rssFeedTable.deselectRow();
