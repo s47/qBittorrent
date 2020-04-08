@@ -150,14 +150,11 @@
                     },
                     delete: (el) => {
                         if (confirm('Are you sure you want to delete the selected RSS feeds?')) {
-                            rssFeedTable.selectedRows.filter(e => e != 0).each(row => {
-                                removeItem(rssFeedTable.rows[row].full_data.dataPath);
-                            });
+                            removeItem(rssFeedTable.rows[rssFeedTable.selectedRows[0]].full_data.dataPath);
                         }
                     },
-                    newSubscription: (el) => {addRSSFeed()},
+                    newSubscription: addRSSFeed,
                     newFolder: (el) => {console.log("[not implemented] folders are not implemnted");},
-                    newSubscription: (el) => {refreshAllFeeds()}
                 },
                 offsets: {
                     x: -16,
@@ -221,29 +218,19 @@
         };
 
         const addRSSFeed = function() {
-            const url = new URI('api/v2/rss/addFeed');
-            
-            var feedURL = prompt('Please type a RSS feed URL', 'http://');
-
-            if (feedURL != null) {
-                new Request({
-                    url: url,
-                    noCache: true,
-                    method: 'post',
-                    data: {
-                        url: feedURL,
-                        path: ""
-                    },
-                    onFailure: function(response) {
-                        if (response.status == 409) {
-                            alert(response.responseText);
-                        }
-                    },
-                    onSuccess: function(response) {
-                        updateRssFeedList();
-                    }
-                }).send();
-            }
+            new MochaUI.Window({
+                id: 'newFeed',
+                title: "QBT_TR(Please type a RSS feed URL)QBT_TR[CONTEXT=RssReaderWidget]",
+                loadMethod: 'iframe',
+                contentURL: 'newfeed.html',
+                scrollbars: false,
+                resizable: false,
+                maximizable: false,
+                paddingVertical: 0,
+                paddingHorizontal: 0,
+                width: 350,
+                height: 100
+            });
         };
         
         const showRssFeed = function(feedUid) {
@@ -415,28 +402,19 @@
         };
 
         const moveItem = function(oldPath) {
-            var newPath = prompt('Please choose a new name for this RSS feed', oldPath);
-
-            if (newPath != null) {
-                const url = new URI('api/v2/rss/moveItem');
-                new Request({
-                    url: url,
-                    noCache: true,
-                    method: 'post',
-                    data: {
-                        itemPath: oldPath,
-                        destPath: newPath
-                    },
-                    onSuccess: function(response) {
-                        updateRssFeedList();
-                    },
-                    onFailure: function(response) {
-                        if (response.status == 409) {
-                            alert(response.responseText);
-                        }
-                    }
-                }).send();
-            }
+            new MochaUI.Window({
+                id: 'renamePage',
+                title: "QBT_TR(Please choose a new name for this RSS feed)QBT_TR[CONTEXT=RssReaderWidget]",
+                loadMethod: 'iframe',
+                contentURL: 'rename_feed.html?' + encodeURIComponent(oldPath),
+                scrollbars: false,
+                resizable: false,
+                maximizable: false,
+                paddingVertical: 0,
+                paddingHorizontal: 0,
+                width: 350,
+                height: 100
+            });
         };
 
         const removeItem = function(path) {
@@ -446,7 +424,7 @@
                 noCache: true,
                 method: 'post',
                 data: {
-                    itemPath: path
+                    path: path
                 },
                 onSuccess: function(response) {
                     updateRssFeedList();

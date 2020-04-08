@@ -15,8 +15,10 @@
         <file>private/edittracker.html</file>
         <file>private/index.html</file>
         <file>private/newcategory.html</file>
+        <file>private/newfeed.html</file>
         <file>private/newtag.html</file>
         <file>private/rename.html</file>
+        <file>private/rename_feed.html</file>
         <file>private/rename_file.html</file>
         <file>private/scripts/client.js</file>
         <file>private/scripts/contextmenu.js</file>
