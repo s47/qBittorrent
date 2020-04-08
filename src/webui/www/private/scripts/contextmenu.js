@@ -556,7 +556,8 @@ window.qBittorrent.ContextMenu = (function() {
                 this.showItem('newFolder');
                 this.showItem('updateAll');
                 this.hideItem('copyFeedURL');
-            } else if (selectedRows.length == 1) {
+            }
+            else if (selectedRows.length == 1) {
                 if (selectedRows[0] == 0) {
                     this.showItem('update');
                     this.showItem('markRead');
@@ -566,7 +567,8 @@ window.qBittorrent.ContextMenu = (function() {
                     this.hideItem('newFolder');
                     this.hideItem('updateAll');
                     this.hideItem('copyFeedURL');
-                } else {
+                }
+                else {
                     this.showItem('update');
                     this.showItem('markRead');
                     this.showItem('rename');
@@ -576,7 +578,8 @@ window.qBittorrent.ContextMenu = (function() {
                     this.hideItem('updateAll');
                     this.showItem('copyFeedURL');
                 }
-            } else {
+            }
+            else {
                 this.showItem('update');
                 this.showItem('markRead');
                 this.hideItem('rename');

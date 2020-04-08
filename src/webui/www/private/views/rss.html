@@ -136,7 +136,8 @@
                     update: (el) => {
                         if (rssFeedTable.selectedRows.contains(0)) {
                             refreshAllFeeds();
-                        } else {
+                        }
+                        else {
                             rssFeedTable.selectedRows.each(row => {
                                 refreshFeed(rssFeedTable.rows[row].full_data.dataUid);
                             });
@@ -169,7 +170,7 @@
                 rssFeedTable.deselectRow();
             });
             $('rssFeedTableDiv').addEventListener("contextmenu", function(e){
-                if(e.toElement.nodeName == "DIV") {
+                if (e.toElement.nodeName == "DIV") {
                     rssFeedTable.deselectAll();
                     rssFeedTable.deselectRow();
                     rssFeedContextMenu.updateMenuItems();
@@ -255,7 +256,7 @@
             rssArticleTable.clear();
             let rowCount = 0;
             let unreadFeed = [];
-            for(let feedEntry in feedData) {
+            for (let feedEntry in feedData) {
                 unreadFeed.append(feedData[feedEntry].filter(e => !e.isRead)
                     .map(f => {f.feedUid = feedEntry; return f;}));
             }
@@ -315,17 +316,15 @@
                     //flatten folder structure
                     let flattenedResp = {};
                     function recFlatten(current, fullName = '') {
-                        if (current.uid !== undefined) {
+                        if (current.uid !== undefined)
                             flattenedResp[fullName] = current;
-                        } else {
-                            for (let child in current) {
+                        else
+                            for (let child in current)
                                 recFlatten(current[child], fullName ? fullName + "\\" + child : child);
-                            }
-                        }
                     }
                     recFlatten(response);
 
-                    for(let feedEntry in flattenedResp) {
+                    for (let feedEntry in flattenedResp) {
                         feedPathMap.set(flattenedResp[feedEntry].uid, feedEntry);
                         let numberOfUnread = flattenedResp[feedEntry].articles.map(art => !art.isRead).filter(v => v).length;
                         let statusImage = "images/qbt-theme/application-rss+xml.svg";
@@ -343,11 +342,11 @@
                             dataPath: feedEntry
                         });
                         feedData[flattenedResp[feedEntry].uid] = flattenedResp[feedEntry].articles;
-                        rowCount++;
+                        ++rowCount;
                     }
                     //unread entry
                     let numberOfUnread = 0;
-                    for(let feedEntry in feedData) {
+                    for (let feedEntry in feedData) {
                         numberOfUnread += feedData[feedEntry].map(art => !art.isRead).filter(v => v).length;
                     }
                     rssFeedTable.updateRowData({
@@ -384,7 +383,7 @@
 
         const refreshAllFeeds = function() {
             var promises = [];
-            for(let feedEntry in feedData) {
+            for (let feedEntry in feedData) {
                 promises.push(new Promise(function(resolve, reject) {
                     refreshFeed(feedEntry, r => {
                         if (r == 0)
@@ -471,9 +470,8 @@
                     updateRssFeedList();
                 },
                 onFailure: function(response) {
-                    if (response.status == 409) {
+                    if (response.status == 409)
                         alert(response.responseText);
-                    }
                 }
             }).send();
         };
@@ -483,7 +481,8 @@
                 rssFeedTable.rows.filter(e => e.rowId != 0).each(row => {
                     markItemAsRead(row.full_data.dataPath);
                 });
-            } else {
+            }
+            else {
                 rssFeedTable.selectedRows.each(row => {
                     markItemAsRead(rssFeedTable.rows[row].full_data.dataPath);
                 });

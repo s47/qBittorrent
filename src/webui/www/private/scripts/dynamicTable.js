@@ -2016,25 +2016,24 @@ window.qBittorrent.DynamicTable = (function() {
 
             const rows = this.rows.getValues();
             let uid = "";
-            for(let i = 0; i < rows.length; i++) {
+            for (let i = 0; i < rows.length; ++i) {
                 if (rows[i].rowId == rowId) {
                     uid = rows[i].full_data.dataUid;
                     break;
                 }
             }
             
-            if (uid === "") {
+            if (uid === "")
                 qBittorrent.Rss.showUnreadRssFeed();
-            } else {
+            else
                 qBittorrent.Rss.showRssFeed(uid);
-            }
         },
         updateIcons: function() {
             // state_icon
             this.rows.each(row => {
                 const img_path = row.full_data.state_icon;
                 let td;
-                for(let i = 0; i < this.tableBody.rows.length; i++) {
+                for (let i = 0; i < this.tableBody.rows.length; ++i) {
                     if (this.tableBody.rows[i].rowId == row.rowId) {
                         td =  this.tableBody.rows[i].children[0];
                         break;
@@ -2118,7 +2117,7 @@ window.qBittorrent.DynamicTable = (function() {
             const rows = this.rows.getValues();
             let articleId = "";
             let feedUid = "";
-            for(let i = 0; i < rows.length; i++) {
+            for (let i = 0; i < rows.length; ++i) {
                 if (rows[i].rowId == rowId) {
                     articleId = rows[i].full_data.dataId;
                     feedUid = rows[i].full_data.feedUid;
@@ -2129,7 +2128,7 @@ window.qBittorrent.DynamicTable = (function() {
             qBittorrent.Rss.showDetails(feedUid, articleId);
         },
         setupTr: function(tr) {
-            if(!this.rows[tr.rowId].full_data.isRead)
+            if (!this.rows[tr.rowId].full_data.isRead)
                 tr.addClass("unreadArticle");
             tr.addEvent('dblclick', function(e) {
                 showDownloadPage([this._this.rows.get(this.rowId).full_data.torrentURL]);
