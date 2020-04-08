@@ -150,9 +150,9 @@
                         });
                     },
                     delete: (el) => {
-                        if (confirm('Are you sure you want to delete the selected RSS feeds?')) {
-                            removeItem(rssFeedTable.rows[rssFeedTable.selectedRows[0]].full_data.dataPath);
-                        }
+                        removeItem(rssFeedTable.selectedRows
+                            .filter(e => e != 0)
+                            .map(sRow => rssFeedTable.rows[sRow].full_data.dataPath));
                     },
                     newSubscription: addRSSFeed,
                     newFolder: (el) => {console.log("[not implemented] folders are not implemnted");},
@@ -405,7 +405,7 @@
                 id: 'renamePage',
                 title: "QBT_TR(Please choose a new name for this RSS feed)QBT_TR[CONTEXT=RssReaderWidget]",
                 loadMethod: 'iframe',
-                contentURL: 'rename_feed.html?' + encodeURIComponent(oldPath),
+                contentURL: 'rename_feed.html?oldPath=' + encodeURIComponent(oldPath),
                 scrollbars: false,
                 resizable: false,
                 maximizable: false,
@@ -416,24 +416,19 @@
             });
         };
 
-        const removeItem = function(path) {
-            const url = new URI('api/v2/rss/removeItem');
-            new Request({
-                url: url,
-                noCache: true,
-                method: 'post',
-                data: {
-                    path: path
-                },
-                onSuccess: function(response) {
-                    updateRssFeedList();
-                },
-                onFailure: function(response) {
-                    if (response.status == 409) {
-                        alert(response.responseText);
-                    }
-                }
-            }).send();
+        const removeItem = function(paths) {
+            new MochaUI.Window({
+                id: 'confirmFeedDeletionPage',
+                title: "QBT_TR(Deletion confirmation)QBT_TR[CONTEXT=RssReaderWidget]",
+                loadMethod: 'iframe',
+                contentURL: 'confirmfeeddeletion.html?paths=' + encodeURIComponent(paths.join("|")),
+                scrollbars: false,
+                resizable: false,
+                maximizable: false,
+                padding: 10,
+                width: 424,
+                height: 140
+            });
         };
 
         const markItemAsRead = function(path) {
@@ -449,9 +444,8 @@
                     updateRssFeedList();
                 },
                 onFailure: function(response) {
-                    if (response.status == 409) {
+                    if (response.status == 409)
                         alert(response.responseText);
-                    }
                 }
             }).send();
         };
