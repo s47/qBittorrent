@@ -29,7 +29,6 @@
             }
         }).activate();
         window.addEvent('domready', function() {
-            //$('feedURL').value = oldPath;
             $('feedURL').focus();
 
             $('submitButton').addEvent('click', function(e) {
@@ -42,7 +41,6 @@
                 }
 
                 $('submitButton').disabled = true;
-
 
                 new Request({
                     url: 'api/v2/rss/addFeed',

@@ -2027,6 +2027,14 @@ window.qBittorrent.DynamicTable = (function() {
             else
                 qBittorrent.Rss.showRssFeed(uid);
         },
+        setupTr: function(tr) {
+            tr.addEvent('dblclick', function(e) {
+                if (this.rowId != 0) {
+                    window.qBittorrent.Rss.moveItem(this._this.rows.get(this.rowId).full_data.dataPath);
+                    return true;
+                }
+            });
+        },
         updateIcons: function() {
 
             // state_icon
