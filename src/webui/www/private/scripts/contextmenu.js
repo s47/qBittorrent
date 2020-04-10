@@ -568,6 +568,16 @@ window.qBittorrent.ContextMenu = (function() {
                     this.hideItem('updateAll');
                     this.hideItem('copyFeedURL');
                 }
+                else if (rssFeedTable.rows[selectedRows[0]].full_data.dataUid == "") {
+                    this.showItem('update');
+                    this.showItem('markRead');
+                    this.showItem('rename');
+                    this.showItem('delete');
+                    this.showItem('newSubscription');
+                    this.showItem('newFolder');
+                    this.hideItem('updateAll');
+                    this.hideItem('copyFeedURL');
+                }
                 else {
                     this.showItem('update');
                     this.showItem('markRead');

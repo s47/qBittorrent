@@ -117,6 +117,7 @@
             return {
                 init: init,
                 addRSSFeed: addRSSFeed,
+                addFolder: addFolder,
                 showRssFeed: showRssFeed,
                 showUnreadRssFeed: showUnreadRssFeed,
                 showDetails: showDetails,
@@ -175,7 +176,7 @@
                             .map(sRow => rssFeedTable.rows[sRow].full_data.dataPath));
                     },
                     newSubscription: addRSSFeed,
-                    newFolder: (el) => {console.log("[not implemented] folders are not implemnted");},
+                    newFolder: addFolder,
                 },
                 offsets: {
                     x: -16,
@@ -263,6 +264,35 @@
                 height: 100
             });
         };
+
+        const addFolder = function() {
+            let path = "";
+            if (rssFeedTable.selectedRows.length != 0) {
+                let row = rssFeedTable.rows[rssFeedTable.selectedRows[0]];
+                if (row.full_data.dataUid == "") {
+                    path = row.full_data.dataPath;
+                }
+                else {
+                    let lastIndex = row.full_data.dataPath.lastIndexOf('\\');
+                    if (lastIndex != -1)
+                        path = row.full_data.dataPath.slice(0, lastIndex);
+                }
+            }
+
+            new MochaUI.Window({
+                id: 'newFeed',
+                title: "QBT_TR(Please choose a folder name)QBT_TR[CONTEXT=RssReaderWidget]",
+                loadMethod: 'iframe',
+                contentURL: 'newfolder.html?path=' + encodeURIComponent(path),
+                scrollbars: false,
+                resizable: false,
+                maximizable: false,
+                paddingVertical: 0,
+                paddingHorizontal: 0,
+                width: 350,
+                height: 100
+            });
+        }
         
         const showRssFeed = function(feedUid) {
             rssArticleTable.clear();
