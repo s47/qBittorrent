@@ -887,13 +887,19 @@ window.addEvent('load', function() {
             window.qBittorrent.Rss.init();
             rssTabInitialized = true;
         }
+        else {
+            window.qBittorrent.Rss.load();
+        }
+
         $("rssTabColumn").removeClass("invisible");
+        customSyncMainDataInterval = 30000;
         hideTransfersTab();
         hideSearchTab();
     };
 
     const hideRssTab = function() {
         $("rssTabColumn").addClass("invisible");
+        window.qBittorrent.Rss.unload();
         MochaUI.Desktop.resizePanels();
     };
 
