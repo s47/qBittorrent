@@ -48,7 +48,7 @@
                     method: 'post',
                     data: {
                         url: feedURL,
-                        path: path + "\\" + feedURL
+                        path: path ? path + "\\" + feedURL : ""
                     },
                     onSuccess: function(response) {
                         window.parent.qBittorrent.Rss.updateRssFeedList();
