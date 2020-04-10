@@ -2016,18 +2016,14 @@ window.qBittorrent.DynamicTable = (function() {
             this.onSelectedRowChanged();
 
             const rows = this.rows.getValues();
-            let uid = "";
+            let path = "";
             for (let i = 0; i < rows.length; ++i) {
                 if (rows[i].rowId == rowId) {
-                    uid = rows[i].full_data.dataUid;
+                    path = rows[i].full_data.dataPath;
                     break;
                 }
             }
-            
-            if (uid === "")
-                qBittorrent.Rss.showUnreadRssFeed();
-            else
-                qBittorrent.Rss.showRssFeed(uid);
+            qBittorrent.Rss.showRssFeed(path);
         },
         setupTr: function(tr) {
             tr.addEvent('dblclick', function(e) {

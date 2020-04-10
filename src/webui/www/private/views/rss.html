@@ -119,7 +119,6 @@
                 addRSSFeed: addRSSFeed,
                 addFolder: addFolder,
                 showRssFeed: showRssFeed,
-                showUnreadRssFeed: showUnreadRssFeed,
                 showDetails: showDetails,
                 updateRssFeedList: updateRssFeedList,
                 refreshFeed: refreshFeed,
@@ -294,48 +293,36 @@
             });
         }
         
-        const showRssFeed = function(feedUid) {
+        const showRssFeed = function(path) {
             rssArticleTable.clear();
             let rowCount = 0;
-            feedData[feedUid].sort((e1, e2) => new Date(e2.date) - new Date(e1.date))
-                .each(torrentEntry => {
-                rssArticleTable.updateRowData({
-	                rowId: rowCount++,
-                    name: torrentEntry.title,
-                    link: torrentEntry.link,
-                    feedUid: feedUid,
-                    dataId: torrentEntry.id,
-                    torrentURL: torrentEntry.torrentURL,
-                    isRead: torrentEntry.isRead
-                });
-            });
-            $('rssDetailsView').empty();
-            rssArticleTable.updateTable(false);
-        };
 
-        const showUnreadRssFeed = function() {
-            rssArticleTable.clear();
-            let rowCount = 0;
-            let unreadFeed = [];
+            let childFeeds = new Set();
+            rssFeedTable.rows.filter(row => row.full_data.dataPath.slice(0, path.length) == path)
+                .filter(row => row.full_data.dataUid != "")
+                .each(row => childFeeds.add(row.full_data.dataUid));
+
+            let visibleArticles = [];
             for (let feedEntry in feedData) {
-                unreadFeed.append(feedData[feedEntry].filter(e => !e.isRead)
-                    .map(f => {
-                        f.feedUid = feedEntry;
-                        return f;}
-                        ));
+                if(childFeeds.has(feedEntry))
+                    visibleArticles.append(feedData[feedEntry]
+                        .map(a => {
+                            a.feedUid = feedEntry;
+                            return a;}));
             }
-            
-            unreadFeed.sort((e1, e2) => new Date(e2.date) - new Date(e1.date))
+            visibleArticles.sort((e1, e2) => new Date(e2.date) - new Date(e1.date))
                 .each(torrentEntry =>  {
                 rssArticleTable.updateRowData({
 	                rowId: rowCount++,
                     name: torrentEntry.title,
                     link: torrentEntry.link,
+                    torrentURL: torrentEntry.torrentURL,
                     feedUid: torrentEntry.feedUid,
                     dataId: torrentEntry.id,
                     isRead: false
                 });
             });
+
             $('rssDetailsView').empty();
             rssArticleTable.updateTable(false);
         };
