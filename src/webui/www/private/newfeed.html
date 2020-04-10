@@ -30,7 +30,7 @@
         }).activate();
         window.addEvent('domready', function() {
             $('feedURL').focus();
-
+            const path = decodeURIComponent(new URI().getData("path"));
             $('submitButton').addEvent('click', function(e) {
                 new Event(e).stop();
                 // check field
@@ -48,7 +48,7 @@
                     method: 'post',
                     data: {
                         url: feedURL,
-                        path: ""
+                        path: path + "\\" + feedURL
                     },
                     onSuccess: function(response) {
                         window.parent.qBittorrent.Rss.updateRssFeedList();

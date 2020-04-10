@@ -584,7 +584,7 @@ window.qBittorrent.ContextMenu = (function() {
                 this.showItem('markRead');
                 this.hideItem('rename');
                 this.showItem('delete');
-                this.showItem('newSubscription');
+                this.hideItem('newSubscription');
                 this.hideItem('newFolder');
                 this.hideItem('updateAll');
                 this.showItem('copyFeedURL');

@@ -156,14 +156,14 @@
                 menu: 'rssFeedMenu',
                 actions: {
                     update: (el) => {
-                        if (rssFeedTable.selectedRows.contains(0)) {
-                            refreshAllFeeds();
-                        }
-                        else {
-                            rssFeedTable.selectedRows.each(row => {
-                                refreshFeed(rssFeedTable.rows[row].full_data.dataUid);
-                            });
-                        }
+                        let feedsToUpdate = new Set();
+                        rssFeedTable.selectedRows.each(rowId => {
+                            let selectedPath = rssFeedTable.rows[rowId].full_data.dataPath;
+                            rssFeedTable.rows.filter(row => row.full_data.dataPath.slice(0, selectedPath.length) == selectedPath)
+                                .filter(row => row.full_data.dataUid != "")
+                                .each(row => feedsToUpdate.add(row));
+                        });
+                        feedsToUpdate.forEach(feed => refreshFeed(feed.full_data.dataUid))
                     },
                     markRead: markSelectedAsRead,
                     rename: (el) => {
@@ -236,11 +236,24 @@
         };
 
         const addRSSFeed = function() {
+            let path = "";
+            if (rssFeedTable.selectedRows.length != 0) {
+                let row = rssFeedTable.rows[rssFeedTable.selectedRows[0]];
+                if (row.full_data.dataUid == "") {
+                    path = row.full_data.dataPath;
+                }
+                else {
+                    let lastIndex = row.full_data.dataPath.lastIndexOf('\\');
+                    if (lastIndex != -1)
+                        path = row.full_data.dataPath.slice(0, lastIndex);
+                }
+            }
+            console.log(path)
             new MochaUI.Window({
                 id: 'newFeed',
                 title: "QBT_TR(Please type a RSS feed URL)QBT_TR[CONTEXT=RssReaderWidget]",
                 loadMethod: 'iframe',
-                contentURL: 'newfeed.html',
+                contentURL: 'newfeed.html?path=' + encodeURIComponent(path),
                 scrollbars: false,
                 resizable: false,
                 maximizable: false,
@@ -559,7 +572,6 @@
                 //find all items that contain this feed and subtract 1
                 rssFeedTable.rows.filter(row => path.slice(0, row.full_data.dataPath.length) == row.full_data.dataPath)
                     .each(row => {
-                        console.log("row " + row.rowId + " unread count " + row.full_data.unread);
                         rssFeedTable.updateRowData({
                             rowId: row.rowId,
                             unread: row.full_data.unread - 1
