@@ -1991,22 +1991,24 @@ window.qBittorrent.DynamicTable = (function() {
         Extends: DynamicTable,
         initColumns: function() {
             this.newColumn('state_icon', '', '', 30, true);
-            this.columns['state_icon'].dataProperties[0] = '';
             this.newColumn('name', '', 'QBT_TR(Rss feeds)QBT_TR[CONTEXT=RssReaderWidget]', -1, true);
+
+            this.columns['state_icon'].dataProperties[0] = '';
+
+            //map name row to "[name] ([unread])"
+            this.columns['name'].dataProperties.push('unread');
+            this.columns['name'].updateTd = function(td, row) {
+                const name = this.getRowValue(row, 0);
+                const unreadCount = this.getRowValue(row, 1);
+                let value = name + " (" + unreadCount + ")";
+                td.set('text', value);
+                td.set('title', value);
+            };
         },
         setupHeaderMenu: function() {},
         setupHeaderEvents: function() {},
         getFilteredAndSortedRows: function() {
-            const filteredRows = [];
-
-            const rows = this.rows.getValues();
-
-            for (let i = 1; i < rows.length; ++i) {
-                filteredRows.push(rows[i]);
-            }
-            filteredRows.sort((r1, r2) => r1.full_data.name.localeCompare(r2.full_data.name));
-            filteredRows.unshift(rows[0]);
-            return filteredRows;
+            return this.rows.getValues();
         },
         selectRow: function(rowId) {
             this.selectedRows.push(rowId);
@@ -2035,6 +2037,21 @@ window.qBittorrent.DynamicTable = (function() {
                 }
             });
         },
+        updateRow: function(tr, fullUpdate) {
+            const row = this.rows.get(tr.rowId);
+            const data = row[fullUpdate ? 'full_data' : 'data'];
+
+            const tds = tr.getElements('td');
+            for (let i = 0; i < this.columns.length; ++i) {
+                if (data.hasOwnProperty(this.columns[i].dataProperties[0]))
+                    this.columns[i].updateTd(tds[i], row);
+            }
+            row['data'] = {};
+            tds[0].style.overflow = "visible";
+            let indentaion = row.full_data.indentaion;
+            tds[0].style.paddingLeft = (indentaion * 32 + 4) + "px";
+            tds[1].style.paddingLeft = (indentaion * 32 + 4) + "px";
+        },
         updateIcons: function() {
             // state_icon
             this.rows.each(row => {
@@ -2051,6 +2068,9 @@ window.qBittorrent.DynamicTable = (function() {
                         break;
                     case "unread":
                         img_path = "images/qbt-theme/mail-folder-inbox.svg";
+                        break;
+                    case "isFolder":
+                        img_path = "images/qbt-theme/folder-documents.svg";
                         break;
                 }
                 let td;
@@ -2116,7 +2136,6 @@ window.qBittorrent.DynamicTable = (function() {
         }
     });
 
-
     const RssArticleTable = new Class({
         Extends: DynamicTable,
         initColumns: function() {
@@ -2125,12 +2144,7 @@ window.qBittorrent.DynamicTable = (function() {
         setupHeaderMenu: function() {},
         setupHeaderEvents: function() {},
         getFilteredAndSortedRows: function() {
-            const filteredRows = [];
-            const rows = this.rows.getValues();
-            for (let i = 0; i < rows.length; ++i) {
-                filteredRows.push(rows[i]);
-            }
-            return filteredRows;
+            return this.rows.getValues();
         },
         selectRow: function(rowId) {
             this.selectedRows.push(rowId);
