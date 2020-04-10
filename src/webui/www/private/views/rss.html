@@ -248,7 +248,7 @@
                         path = row.full_data.dataPath.slice(0, lastIndex);
                 }
             }
-            console.log(path)
+
             new MochaUI.Window({
                 id: 'newFeed',
                 title: "QBT_TR(Please type a RSS feed URL)QBT_TR[CONTEXT=RssReaderWidget]",
@@ -596,15 +596,14 @@
         };
         
         const markSelectedAsRead = function() {
-            if (rssFeedTable.selectedRows.contains(0)) {
-                rssFeedTable.rows.filter(row => rssFeedTable.rows[row].full_data.dataUid != "")
-                    .each(row => markItemAsRead(row.full_data.dataPath));
-            }
-            else {
-                rssFeedTable.selectedRows.each(row => {
-                    markItemAsRead(rssFeedTable.rows[row].full_data.dataPath);
-                });
-            }
+            let feedsToMark = new Set();
+            rssFeedTable.selectedRows.each(rowId => {
+                let selectedPath = rssFeedTable.rows[rowId].full_data.dataPath;
+                rssFeedTable.rows.filter(row => row.full_data.dataPath.slice(0, selectedPath.length) == selectedPath)
+                    .filter(row => row.full_data.dataUid != "")
+                    .each(row => feedsToMark.add(row));
+            });
+            feedsToMark.forEach(feed => markItemAsRead(feed.full_data.dataPath))
         };
 
         const openRssDownloader = function() {
