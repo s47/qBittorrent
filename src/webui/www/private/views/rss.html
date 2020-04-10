@@ -439,7 +439,7 @@
                             rssFeedTable.updateIcons();
 
                         //get currently opened feed
-                        let openedFeedPath = "";
+                        let openedFeedPath = undefined;
                         if (rssFeedTable.selectedRows.length != 0) {
                             let lastSelectedRow = rssFeedTable.selectedRows[rssFeedTable.selectedRows.length - 1];
                             openedFeedPath = rssFeedTable.rows[lastSelectedRow].full_data.dataPath;
@@ -461,7 +461,7 @@
                                 if (articlesDiffer) {
                                     feedData[r.uid] = r.articles;
                                     //if feed that is open changed, reload
-                                    if (r.fullName.slice(0, openedFeedPath.length) == openedFeedPath)
+                                    if (openedFeedPath !== undefined && r.fullName.slice(0, openedFeedPath.length) == openedFeedPath)
                                         showRssFeed(r.fullName);
                                 }
                                 else {
@@ -485,7 +485,7 @@
                                             .each(row => row.full_data.unread += readDifference);
 
                                         //if feed that is opened changed update dynamicly
-                                        if (r.fullName.slice(0, openedFeedPath.length) == openedFeedPath) {
+                                        if (openedFeedPath !== undefined && r.fullName.slice(0, openedFeedPath.length) == openedFeedPath) {
                                             for (let i = 0; i < r.articles.length; ++i) {
                                                 let matchingRow = rssArticleTable.rows.filter(row => row.full_data.feedUid == r.uid)
                                                     .filter(row => row.full_data.dataId == r.articles[i].id);
