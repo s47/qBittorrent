@@ -1,18 +1,18 @@
 <style>
     #rssView {
-        padding: 20px;
+        padding: 20px 20px 0 20px;
+        height: calc(100% - 20px);
     }
 
     #rssConentView {
+        display: table;
         width: 100%;
+        height: calc(100% - 30px);
+        vertical-align: top;
     }
 
     #rssFeedFixedHeaderDiv .dynamicTableHeader,  #rssArticleFixedHeaderDiv .dynamicTableHeader{
         cursor: default;
-    }
-
-    #rssTableBody {
-        vertical-align: top;
     }
 
     .alignRight {
@@ -28,61 +28,78 @@
         font-style: italic;
         margin-bottom: 10px;
     }
+
+    #centerRssColumn {
+        margin: 0 10px 0 10px;
+    }
+
+    #leftRssColumn, #centerRssColumn, #rightRssColumn {
+        float: left;
+        height: 100%;
+        width: calc(33% - 7px);
+        border: none;
+    }
+
+    #rightRssColumn {
+        overflow:auto;
+    }
+
+    #rssFeedTableDiv, #rssArticleTableDiv {
+        height: calc(100vh - 180px);
+    }
+    
 </style>
 
 <div id="rssView">
-    <div id="rssFetchingDisabled" class="invisible">QBT_TR(Fetching of RSS feeds is disabled now! You can enable it in application settings.)QBT_TR[CONTEXT=RssReaderWidget]</div>
-    <div id="rssButtonBar" style="overflow: hidden; height: 30px;">
-        <button id="newSubscriptionButton" onclick="qBittorrent.Rss.addRSSFeed()">QBT_TR(New subscription)QBT_TR[CONTEXT=RssReaderWidget]</button>
-        <button id="markReadButton" onclick="qBittorrent.Rss.markSelectedAsRead()">QBT_TR(Mark items read)QBT_TR[CONTEXT=RssReaderWidget]</button>
-        <button id="updateAllButton" onclick="qBittorrent.Rss.refreshAllFeeds()">QBT_TR(Update all)QBT_TR[CONTEXT=RssReaderWidget]</button>
-        
-        <button id="rssDownloaderButton" class="alignRight" onclick="qBittorrent.Rss.openRssDownloader()">QBT_TR(RSS Downloader...)QBT_TR[CONTEXT=RssReaderWidget]</button>
+    <div id="rssTopBar">
+        <div id="rssFetchingDisabled" class="invisible">QBT_TR(Fetching of RSS feeds is disabled now! You can enable it in application settings.)QBT_TR[CONTEXT=RssReaderWidget]</div>
+        <div id="rssButtonBar" style="overflow: hidden; height: 30px;">
+            <button id="newSubscriptionButton" onclick="qBittorrent.Rss.addRSSFeed()">QBT_TR(New subscription)QBT_TR[CONTEXT=RssReaderWidget]</button>
+            <button id="markReadButton" onclick="qBittorrent.Rss.markSelectedAsRead()">QBT_TR(Mark items read)QBT_TR[CONTEXT=RssReaderWidget]</button>
+            <button id="updateAllButton" onclick="qBittorrent.Rss.refreshAllFeeds()">QBT_TR(Update all)QBT_TR[CONTEXT=RssReaderWidget]</button>
+            
+            <button id="rssDownloaderButton" class="alignRight" onclick="qBittorrent.Rss.openRssDownloader()">QBT_TR(RSS Downloader...)QBT_TR[CONTEXT=RssReaderWidget]</button>
+        </div>
     </div>
-    <table id="rssConentView">
-        <tbody id="rssTableBody">
-            <tr id="rssTableRow">
-                <td id="rssFeedsRow" style="width:33%">
-                    <div id="rssFeedFixedHeaderDiv" class="dynamicTableFixedHeaderDiv">
-                        <table class="dynamicTable unselectable" style="position:relative; width:100%">
-                            <thead style="width:100%">
-                                <tr class="dynamicTableHeader" style="width:100%"></tr>
-                            </thead>
-                        </table>
-                    </div>
-                    <div id="rssFeedTableDiv" class="dynamicTableDiv">
-                        <table class="dynamicTable unselectable" style="width:100%">
-                            <thead style="width:100%">
-                                <tr class="dynamicTableHeader" style="width:100%"></tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </td>
-                <td id="rssArticleRow" style="width:33%">
-                    <div id="rssArticleFixedHeaderDiv" class="dynamicTableFixedHeaderDiv">
-                        <table class="dynamicTable unselectable" style="position:relative; width:100%">
-                            <thead style="width:100%">
-                                <tr class="dynamicTableHeader" style="width:100%"></tr>
-                            </thead>
-                        </table>
-                    </div>
-                    <div id="rssArticleTableDiv" class="dynamicTableDiv">
-                        <table class="dynamicTable unselectable" style="width:100%">
-                            <thead style="width:100%">
-                                <tr class="dynamicTableHeader" style="width:100%"></tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </td>
-                <td id="rssDetailsRow">
-                    <div id="rssDetailsView">
-                    </div>    
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div id="rssConentView">
+        <div id="leftRssColumn">
+            <div id="rssFeedFixedHeaderDiv" class="dynamicTableFixedHeaderDiv">
+                <table class="dynamicTable unselectable" style="position:relative; width:100%">
+                    <thead style="width:100%">
+                        <tr class="dynamicTableHeader" style="width:100%"></tr>
+                    </thead>
+                </table>
+            </div>
+            <div id="rssFeedTableDiv" class="dynamicTableDiv">
+                <table class="dynamicTable unselectable" style="width:100%">
+                    <thead style="width:100%">
+                        <tr class="dynamicTableHeader" style="width:100%"></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="centerRssColumn">
+            <div id="rssArticleFixedHeaderDiv" class="dynamicTableFixedHeaderDiv">
+                <table class="dynamicTable unselectable" style="position:relative; width:100%">
+                    <thead style="width:100%">
+                        <tr class="dynamicTableHeader" style="width:100%"></tr>
+                    </thead>
+                </table>
+            </div>
+            <div id="rssArticleTableDiv" class="dynamicTableDiv">
+                <table class="dynamicTable unselectable" style="width:100%">
+                    <thead style="width:100%">
+                        <tr class="dynamicTableHeader" style="width:100%"></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="rightRssColumn">
+            <div id="rssDetailsView"></div>    
+        </div>
+    </div>
 </div>
 
 <ul id="rssFeedMenu" class="contextMenu">

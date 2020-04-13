@@ -2130,6 +2130,13 @@ window.qBittorrent.DynamicTable = (function() {
 
             this.hiddenTableHeader.appendChild(new Element('th'));
             this.fixedTableHeader.appendChild(new Element('th'));
+        },
+        setupCommonEvents: function() {
+            const scrollFn = function() {
+                $(this.dynamicTableFixedHeaderDivId).getElements('table')[0].style.left = -$(this.dynamicTableDivId).scrollLeft + 'px';
+            }.bind(this);
+
+            $(this.dynamicTableDivId).addEvent('scroll', scrollFn);
         }
     });
 
@@ -2219,6 +2226,13 @@ window.qBittorrent.DynamicTable = (function() {
 
             this.hiddenTableHeader.appendChild(new Element('th'));
             this.fixedTableHeader.appendChild(new Element('th'));
+        },
+        setupCommonEvents: function() {
+            const scrollFn = function() {
+                $(this.dynamicTableFixedHeaderDivId).getElements('table')[0].style.left = -$(this.dynamicTableDivId).scrollLeft + 'px';
+            }.bind(this);
+
+            $(this.dynamicTableDivId).addEvent('scroll', scrollFn);
         }
     });
 
