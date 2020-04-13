@@ -41,7 +41,8 @@ window.qBittorrent.ContextMenu = (function() {
             TagsFilterContextMenu: TagsFilterContextMenu,
             SearchPluginsTableContextMenu: SearchPluginsTableContextMenu,
             RssFeedContextMenu: RssFeedContextMenu,
-            RssArticleContextMenu: RssArticleContextMenu
+            RssArticleContextMenu: RssArticleContextMenu,
+            RssDownloaderRuleContextMenu: RssDownloaderRuleContextMenu
         };
     };
 
@@ -543,7 +544,7 @@ window.qBittorrent.ContextMenu = (function() {
     const RssFeedContextMenu = new Class({
         Extends: ContextMenu,
         updateMenuItems: function() {
-            let selectedRows = rssFeedTable.selectedRowsIds();
+            let selectedRows = window.qBittorrent.Rss.rssFeedTable.selectedRowsIds();
             this.menu.getElement('a[href$=newSubscription]').parentNode.addClass('separator');
             if (selectedRows.length == 0) {
                 //remove seperator on top of newSubscription entry to avoid double line line
@@ -568,7 +569,7 @@ window.qBittorrent.ContextMenu = (function() {
                     this.hideItem('updateAll');
                     this.hideItem('copyFeedURL');
                 }
-                else if (rssFeedTable.rows[selectedRows[0]].full_data.dataUid == "") {
+                else if (window.qBittorrent.Rss.rssFeedTable.rows[selectedRows[0]].full_data.dataUid == "") {
                     this.showItem('update');
                     this.showItem('markRead');
                     this.showItem('rename');
@@ -604,6 +605,57 @@ window.qBittorrent.ContextMenu = (function() {
 
     const RssArticleContextMenu = new Class({
         Extends: ContextMenu
+    });
+
+    const RssDownloaderRuleContextMenu = new Class({
+        Extends: ContextMenu,
+        adjustMenuPosition: function(e) {
+            this.updateMenuItems();
+
+            // draw the menu off-screen to know the menu dimensions
+            this.menu.setStyles({
+                left: '-999em',
+                top: '-999em'
+            });
+            // position the menu
+            let xPosMenu = e.page.x + this.options.offsets.x - $('rssdownloaderpage').offsetLeft;
+            let yPosMenu = e.page.y + this.options.offsets.y - $('rssdownloaderpage').offsetTop;
+            if (xPosMenu + this.menu.offsetWidth > document.documentElement.clientWidth)
+                xPosMenu -= this.menu.offsetWidth;
+            if (yPosMenu + this.menu.offsetHeight > document.documentElement.clientHeight)
+                yPosMenu = document.documentElement.clientHeight - this.menu.offsetHeight;
+            if (xPosMenu < 0)
+                xPosMenu = 0;
+            if (yPosMenu < 0)
+                yPosMenu = 0;
+            this.menu.setStyles({
+                left: xPosMenu,
+                top: yPosMenu,
+                position: 'absolute',
+                'z-index': '2000'
+            });
+        },
+        updateMenuItems: function() {
+            let selectedRows = window.qBittorrent.RssDownloader.rssDownloaderRulesTable.selectedRowsIds();
+            if (selectedRows.length == 0) {
+                this.showItem('addRule');
+                this.hideItem('deleteRule');
+                this.hideItem('renameRule');
+                this.hideItem('clearDownloadedEpisodes');
+            }
+            else if (selectedRows.length == 1) {
+                this.showItem('addRule');
+                this.showItem('deleteRule');
+                this.showItem('renameRule');
+                this.showItem('clearDownloadedEpisodes');
+            }
+            else {
+                this.showItem('addRule');
+                this.showItem('deleteRule');
+                this.hideItem('renameRule');
+                this.showItem('clearDownloadedEpisodes');
+            }
+        }
     });
 
     return exports();

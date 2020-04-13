@@ -1,0 +1,357 @@
+<style>
+    #rssdownloaderpage_content {
+        height: calc(100% - 30px);
+    }
+
+    #RssDownloader {
+        height: 100%;
+    }
+
+    #leftColumn {
+        width: 25%;
+        height: 100%;
+        float: left;
+    }
+
+    #rulesTable {
+        width: 100%;
+        height: 100%;
+    }
+
+    #centerColumn {
+        width: 50%;
+        float: left;
+    }
+
+    #rightColumn {
+        width: 25%;
+        float: left;
+    }
+    
+    .fullWidth {
+        width: 100%;
+        max-width: none;
+    }
+
+    .noWrap {
+        white-space: nowrap;
+    }
+</style>
+
+<div id="RssDownloader" class="RssDownloader">
+    <div id="leftColumn">
+        <b>QBT_TR(Download Rules)QBT_TR[CONTEXT=RssReaderWidget]</b>
+        <div id="rulesTable">
+            <div id="rulesSelection_checkBoxList">
+                <div id="rssDownloaderRuleFixedHeaderDiv" class="dynamicTableFixedHeaderDiv invisible">
+                    <table class="dynamicTable unselectable" style="position:relative; width:100%">
+                        <thead style="width:100%">
+                            <tr class="dynamicTableHeader" style="width:100%"></tr>
+                        </thead>
+                    </table>
+                </div>
+                <div id="rssDownloaderRuleTableDiv" class="dynamicTableDiv">
+                    <table class="dynamicTable unselectable" style="width:100%">
+                        <thead style="width:100%">
+                            <tr class="dynamicTableHeader" style="width:100%"></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="centerColumn">
+        <fieldset class="settings">
+            <legend>QBT_TR(Rule Definition)QBT_TR[CONTEXT=RssReaderWidget]</legend>
+            <div class="formRow">
+                <input disabled type="checkbox" id="useRegEx" />
+                <label for="useRegEx">QBT_TR(Use Regular Expressions)QBT_TR[CONTEXT=RssReaderWidget]</label>
+            </div>
+            <table class="fullWidth">
+                <tr>
+                    <td>
+                        <label for="mustContain_text" class="noWrap">QBT_TR(Must Contain:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                    </td>
+                    <td class="fullWidth">
+                        <input disabled type="text" id="mustContain_text" class="fullWidth" autocorrect="off" autocapitalize="none" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="mustNotContain_text" class="noWrap">QBT_TR(Must Not Contain:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                    </td>
+                    <td class="fullWidth">
+                        <input disabled type="text" id="mustNotContain_text" class="fullWidth" autocorrect="off" autocapitalize="none" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="episodeFilter_text" class="noWrap">QBT_TR(Episode Filter:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                    </td>
+                    <td class="fullWidth">
+                        <input disabled type="text" id="episodeFilter_text" class="fullWidth" autocorrect="off" autocapitalize="none" />
+                    </td>
+                </tr>
+            </table>
+            <div class="formRow">
+                <input disabled type="checkbox" id="useSmartFilter" />
+                <label for="useSmartFilter">QBT_TR(Use Smart Episode Filter)QBT_TR[CONTEXT=RssReaderWidget]</label>
+            </div>
+
+            <hr>
+
+            <table class="fullWidth">
+                <tr>
+                    <td>
+                        <label class="noWrap">QBT_TR(Assign Category:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                    </td>
+                    <td class="fullWidth">
+                        <select disabled id="assignCategory_combobox" class="fullWidth">
+                            <option value="default"></option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <div class="formRow">
+                <input disabled type="checkbox" id="savetoDifferentDir" />
+                <label for="savetoDifferentDir">QBT_TR(Save to a Differnet Directory)QBT_TR[CONTEXT=RssReaderWidget]</label>
+            </div>
+            <table class="fullWidth">
+                <tr>
+                    <td>
+                        <label class="noWrap" for="saveTo_text">QBT_TR(Save to:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                    </td>
+                    <td class="fullWidth">
+                        <input disabled type="text" class="fullWidth" id="saveTo_text" autocorrect="off" autocapitalize="none"/>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td><label for="ignoreDaysValue">QBT_TR(Ignore Subsequent Matches for (0 to Disable))QBT_TR[CONTEXT=RssReaderWidget]</label></td>
+                    <td><input type="number" id="ignoreDaysValue" style="width: 4em;" min="0" />&nbsp;&nbsp;QBT_TR(Days)QBT_TR[CONTEXT=RssReaderWidget]</td>
+                </tr>
+            </table>
+            <div style="float:right">
+                Last Match: <span id="lastMatchText">QBT_TR(Unknown)QBT_TR[CONTEXT=RssReaderWidget]</span>
+            </div>
+            <table class="fullWidth">
+                <tr>
+                    <td>
+                        <label class="noWrap">QBT_TR(Add Paused:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                    </td>
+                    <td class="fullWidth">
+                        <select disabled id="addPaused_combobox" class="fullWidth">
+                            <option value="default">Use global Settings</option>
+                            <option value="always">Always</option>
+                            <option value="never">Never</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <table class="fullWidth">
+                <tr>
+                    <td>
+                        <label class="noWrap">QBT_TR(Create Subfolder:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                    </td>
+                    <td class="fullWidth">
+                        <select disabled id="creatSubfolder_combobox" class="fullWidth">
+                            <option value="default">Use global Settings</option>
+                            <option value="always">Always</option>
+                            <option value="never">Never</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+        <fieldset class="settings">
+            <legend>QBT_TR(Apply Rule to Feeds:)QBT_TR[CONTEXT=RssReaderWidget]</legend>
+
+            <div id="feedSelection_checkBoxList">
+                <input type="checkbox" id="Feed1" name="Feed1" value="Feed1">
+                <label for="Feed1">Feed 1</label><br>
+                <input type="checkbox" id="Feed2" name="Feed2" value="Feed2">
+                <label for="Feed2">Feed 2</label><br>
+                <input type="checkbox" id="Feed3" name="Feed3" value="Feed3">
+                <label for="Feed3">Feed 3</label><br>
+            </div>
+    </fieldset>
+    </div>
+    <div id="rightColumn">
+        <b>QBT_TR(Matching RSS Articles:)QBT_TR[CONTEXT=RssReaderWidget]</b>
+        <div id="articleList">
+        </div>
+    </div>
+</div>
+
+<ul id="rssDownloaderRuleMenu" class="contextMenu">
+    <li><a href="#addRule"><img src="images/qbt-theme/document-new.svg" alt="QBT_TR(Add new rule...)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Add new rule...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
+    <li><a href="#deleteRule"><img src="images/qbt-theme/list-remove.svg" alt="QBT_TR(Delete rule)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Delete rule)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
+    <li class="separator"><a href="#renameRule"><img src="images/qbt-theme/edit-rename.svg" alt="QBT_TR(Rename rule...)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Rename rule...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
+    <li class="separator"><a href="#clearDownloadedEpisodes"><img src="images/qbt-theme/edit-clear.svg" alt="QBT_TR(Clear downloaded episodes...)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Clear downloaded episodes...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
+</ul>
+
+<script>
+    'use strict';
+
+    if (window.qBittorrent === undefined) {
+        window.qBittorrent = {};
+    }
+
+    window.qBittorrent.RssDownloader = (function() {
+        const exports = function() {
+            return {
+                updateRulesList: updateRulesList,
+                showRule: showRule,
+                rssDownloaderRulesTable: rssDownloaderRulesTable
+            };
+        };
+
+        let rssDownloaderRulesTable = new window.qBittorrent.DynamicTable.rssDownloaderRulesTable();
+        let rssDownloaderRuleContextMenu;
+        //let rssDownloaderArticlesTable = new window.qBittorrent.DynamicTable.rssDownloaderArticlesTable();
+
+        let rulesList;
+
+
+        const initRssDownloader = function() {
+            rssDownloaderRuleContextMenu = new window.qBittorrent.ContextMenu.RssDownloaderRuleContextMenu({
+                targets: '',
+                menu: 'rssDownloaderRuleMenu',
+                actions: {
+                },
+                offsets: {
+                    x: -22,
+                    y: -4
+                }
+            });
+
+            rssDownloaderRulesTable.setup('rssDownloaderRuleTableDiv', 'rssDownloaderRuleFixedHeaderDiv', rssDownloaderRuleContextMenu);
+            rssDownloaderRuleContextMenu.addTarget($('rulesTable'));
+            //deselect feed when clicking on empty part of table
+            $('rulesTable').addEventListener("click", function(e) {
+                rssDownloaderRulesTable.deselectAll();
+                rssDownloaderRulesTable.deselectRow();
+                showRule("")
+            });
+            $('rulesTable').addEventListener("contextmenu", function(e) {
+                if (e.toElement.nodeName == "DIV") {
+                    rssDownloaderRulesTable.deselectAll();
+                    rssDownloaderRulesTable.deselectRow();
+                    rssDownloaderRuleContextMenu.updateMenuItems();
+                    showRule("")
+                }
+            });
+            updateRulesList();
+            //get all categories and add to combobox
+            new Request.JSON({
+                url: 'api/v2/torrents/categories',
+                noCache: true,
+                method: 'get',
+                onSuccess: function(response) {
+                    var combobox = $('assignCategory_combobox');
+                    for (let cat in response) {
+                        var option = document.createElement('option');
+                        option.text = option.value = cat;
+                        combobox.add(option);
+                    }
+                }
+            }).send();
+        };
+
+        const updateRulesList = function() {
+            //get all rules
+            new Request.JSON({
+                url: 'api/v2/rss/rules',
+                noCache: true,
+                method: 'get',
+                onSuccess: function(response) {
+                    let rowCount = 0;
+                    for (let rule in response) {
+                        rssDownloaderRulesTable.updateRowData({
+                            rowId: rowCount++,
+                            checked: response[rule].enabled,
+                            name: rule
+                        });
+                    }
+                    rssDownloaderRulesTable.updateTable(false);
+                    rulesList = response;
+                }
+            }).send();
+        }
+
+        const showRule = function(ruleName)  {
+            if (ruleName == "") {
+                //disable all
+                $('useRegEx').disabled = true;
+                $('mustContain_text').disabled = true;
+                $('mustNotContain_text').disabled = true;
+                $('episodeFilter_text').disabled = true;
+                $('useSmartFilter').disabled = true;
+                $('assignCategory_combobox').disabled = true;
+                $('savetoDifferentDir').disabled = true;
+                $('saveTo_text').disabled = true;
+                $('addPaused_combobox').disabled = true;
+                $('creatSubfolder_combobox').disabled = true;
+
+                //reset all boxes
+                $('useRegEx').checked = false;
+                $('mustContain_text').value = "";
+                $('mustNotContain_text').value = "";
+                $('episodeFilter_text').value = "";
+                $('useSmartFilter').checked = false;
+                $('assignCategory_combobox').value = "default";
+                $('savetoDifferentDir').checked = false;
+                $('saveTo_text').value = "";
+                $('ignoreDaysValue').value = 0;
+                $('lastMatchText').innerHTML = "QBT_TR(Unknown)QBT_TR[CONTEXT=RssReaderWidget]";
+                $('addPaused_combobox').value = "default";
+                $('creatSubfolder_combobox').value = "default";
+            }
+            else {
+                //enable all
+                $('useRegEx').disabled = false;
+                $('mustContain_text').disabled = false;
+                $('mustNotContain_text').disabled = false;
+                $('episodeFilter_text').disabled = false;
+                $('useSmartFilter').disabled = false;
+                $('assignCategory_combobox').disabled = false;
+                $('savetoDifferentDir').disabled = false;
+                $('saveTo_text').disabled = false;
+                $('addPaused_combobox').disabled = false;
+                $('creatSubfolder_combobox').disabled = false;
+
+                //load rule settings
+                $('useRegEx').checked = rulesList[ruleName].useRegex;
+                $('mustContain_text').value = rulesList[ruleName].mustContain;
+                $('mustNotContain_text').value = rulesList[ruleName].mustNotContain;
+                $('episodeFilter_text').value = rulesList[ruleName].episodeFilter;
+                $('useSmartFilter').checked = rulesList[ruleName].smartFilter;
+                
+                $('assignCategory_combobox').value = rulesList[ruleName].assignedCategory ? rulesList[ruleName].assignedCategory : "default";
+                $('savetoDifferentDir').checked = rulesList[ruleName].savePath != "";
+                $('saveTo_text').value = rulesList[ruleName].savePath;
+                $('ignoreDaysValue').value = rulesList[ruleName].ignoreDays;
+                $('lastMatchText').innerHTML = rulesList[ruleName].lastMatch ? rulesList[ruleName].lastMatch : "QBT_TR(Unknown)QBT_TR[CONTEXT=RssReaderWidget]";
+                if (rulesList[ruleName].addPaused === null)
+                    $('addPaused_combobox').value = "default";
+                else
+                    $('addPaused_combobox').value = rulesList[ruleName].addPaused ? "always" : "never";
+
+                if (rulesList[ruleName].createSubfolder === null)
+                    $('creatSubfolder_combobox').value = "default";
+                else
+                    $('creatSubfolder_combobox').value = rulesList[ruleName].createSubfolder ? "always" : "never";
+            }
+
+            /* Currently not read variables:
+            affectedFeeds: []
+            previouslyMatchedEpisodes: []*/
+        }
+
+
+        initRssDownloader();
+        return exports();
+    })();
+</script>

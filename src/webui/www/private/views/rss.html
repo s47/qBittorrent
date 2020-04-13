@@ -109,8 +109,6 @@
     if (window.qBittorrent === undefined) {
         window.qBittorrent = {};
     }
-    let rssFeedTable = new window.qBittorrent.DynamicTable.RssFeedTable();
-    let rssArticleTable = new window.qBittorrent.DynamicTable.RssArticleTable();
 
     window.qBittorrent.Rss = (function() {
         const exports = function() {
@@ -130,7 +128,8 @@
                 markItemAsRead: markItemAsRead,
                 markArticleAsRead: markArticleAsRead,
                 markSelectedAsRead: markSelectedAsRead,
-                openRssDownloader: openRssDownloader
+                openRssDownloader: openRssDownloader,
+                rssFeedTable: rssFeedTable
             };
         };
 
@@ -140,6 +139,8 @@
         let rssFeedContextMenu;
         let rssArticleContextMenu;
         let feedRefreshTimer;
+        let rssFeedTable = new window.qBittorrent.DynamicTable.RssFeedTable();
+        let rssArticleTable = new window.qBittorrent.DynamicTable.RssArticleTable();
 
         const init = function() {
             new Request.JSON({
@@ -722,7 +723,20 @@
         };
 
         const openRssDownloader = function() {
-
+            const id = 'rssdownloaderpage';
+            new MochaUI.Window({
+                id: id,
+                title: 'QBT_TR(Rss Downloader)QBT_TR[CONTEXT=RssReaderWidget]',
+                loadMethod: 'xhr',
+                contentURL: 'views/rssDownloader.html',
+                maximizable: false,
+                padding: 10,
+                width: loadWindowWidth(id, 700),
+                height: loadWindowHeight(id, 600),
+                onResize: function() {
+                    saveWindowSize(id);
+                }
+            });
         };
 
         return exports();

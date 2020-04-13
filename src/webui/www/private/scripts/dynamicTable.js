@@ -47,7 +47,8 @@ window.qBittorrent.DynamicTable = (function() {
             TorrentTrackersTable: TorrentTrackersTable,
             TorrentFilesTable: TorrentFilesTable,
             RssFeedTable: RssFeedTable,
-            RssArticleTable: RssArticleTable
+            RssArticleTable: RssArticleTable,
+            rssDownloaderRulesTable: rssDownloaderRulesTable
         };
     };
 
@@ -2023,7 +2024,7 @@ window.qBittorrent.DynamicTable = (function() {
                     break;
                 }
             }
-            qBittorrent.Rss.showRssFeed(path);
+            window.qBittorrent.Rss.showRssFeed(path);
         },
         setupTr: function(tr) {
             tr.addEvent('dblclick', function(e) {
@@ -2158,7 +2159,7 @@ window.qBittorrent.DynamicTable = (function() {
                     break;
                 }
             }
-            qBittorrent.Rss.showDetails(feedUid, articleId);
+            window.qBittorrent.Rss.showDetails(feedUid, articleId);
         },
         setupTr: function(tr) {
             tr.addEvent('dblclick', function(e) {
@@ -2218,6 +2219,81 @@ window.qBittorrent.DynamicTable = (function() {
 
             this.hiddenTableHeader.appendChild(new Element('th'));
             this.fixedTableHeader.appendChild(new Element('th'));
+        }
+    });
+
+    const rssDownloaderRulesTable = new Class({
+        Extends: DynamicTable,
+        initColumns: function() {
+            this.newColumn('checked', '', '', 30, true);
+            this.newColumn('name', '', '', -1, true);
+
+            //this.columns['checked'].dataProperties[0] = '';
+            this.columns['checked'].updateTd = function(td, row) {
+                const checkbox = new Element('input');
+                checkbox.set('type', 'checkbox');
+                checkbox.set('id', 'cbRssDlRule' + row.rowId);
+                checkbox.set('data-id', row.rowId);
+                checkbox.checked = this.getRowValue(row);
+                td.append(checkbox);
+            };
+        },
+        setupHeaderMenu: function() {},
+        setupHeaderEvents: function() {},
+        getFilteredAndSortedRows: function() {
+            return this.rows.getValues();
+        },
+        newColumn: function(name, style, caption, defaultWidth, defaultVisible) {
+            const column = {};
+            column['name'] = name;
+            column['title'] = name;
+            column['visible'] = defaultVisible;
+            column['force_hide'] = false;
+            column['caption'] = caption;
+            column['style'] = style;
+            if (defaultWidth != -1) {
+                column['width'] = defaultWidth;
+            }
+            
+            column['dataProperties'] = [name];
+            column['getRowValue'] = function(row, pos) {
+                if (pos === undefined)
+                    pos = 0;
+                return row['full_data'][this.dataProperties[pos]];
+            };
+            column['compareRows'] = function(row1, row2) {
+                if (this.getRowValue(row1) < this.getRowValue(row2))
+                    return -1;
+                else if (this.getRowValue(row1) > this.getRowValue(row2))
+                    return 1;
+                else return 0;
+            };
+            column['updateTd'] = function(td, row) {
+                const value = this.getRowValue(row)
+                td.set('text', value);
+                td.set('title', value);
+            };
+            column['onResize'] = null;
+            this.columns.push(column);
+            this.columns[name] = column;
+
+            this.hiddenTableHeader.appendChild(new Element('th'));
+            this.fixedTableHeader.appendChild(new Element('th'));
+        },
+        selectRow: function(rowId) {
+            this.selectedRows.push(rowId);
+            this.setRowClass();
+            this.onSelectedRowChanged();
+
+            const rows = this.rows.getValues();
+            let name = "";
+            for (let i = 0; i < rows.length; ++i) {
+                if (rows[i].rowId == rowId) {
+                    name = rows[i].full_data.name;
+                    break;
+                }
+            }
+            window.qBittorrent.RssDownloader.showRule(name);
         }
     });
 
