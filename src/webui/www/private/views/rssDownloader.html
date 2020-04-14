@@ -40,7 +40,7 @@
     }
 
     #rssDownloaderFeeds {
-        height: calc(100% - 340px);
+        height: calc(100% - 355px);
         overflow: hidden;
     }
 
@@ -48,6 +48,11 @@
         height: calc(100% - 21px);
         width: 100%;
         overflow: auto;
+    }
+
+    #saveButton {
+        margin-top: 5px;
+        width: 100%;
     }
 </style>
 
@@ -121,7 +126,7 @@
                     </td>
                     <td class="fullWidth">
                         <select disabled id="assignCategory_combobox" class="fullWidth">
-                            <option value="default"></option>
+                            <option value=""></option>
                         </select>
                     </td>
                 </tr>
@@ -197,7 +202,8 @@
                     </table>
                 </div>
             </div>
-    </fieldset>
+        </fieldset>
+        <button disabled id="saveButton" onclick="qBittorrent.RssDownloader.saveSettings()">QBT_TR(Save)QBT_TR[CONTEXT=RssReaderWidget]</button>
     </div>
     <div id="rightRssDownloaderColumn">
         <b>QBT_TR(Matching RSS Articles:)QBT_TR[CONTEXT=RssReaderWidget]</b>
@@ -226,7 +232,9 @@
                 updateRulesList: updateRulesList,
                 showRule: showRule,
                 modifyRuleState: modifyRuleState,
-                rssDownloaderRulesTable: rssDownloaderRulesTable
+                saveSettings: saveSettings,
+                rssDownloaderRulesTable: rssDownloaderRulesTable,
+                rssDownloaderFeedSelectionTable: rssDownloaderFeedSelectionTable
             };
         };
 
@@ -274,9 +282,9 @@
                 noCache: true,
                 method: 'get',
                 onSuccess: function(response) {
-                    var combobox = $('assignCategory_combobox');
+                    let combobox = $('assignCategory_combobox');
                     for (let cat in response) {
-                        var option = document.createElement('option');
+                        let option = document.createElement('option');
                         option.text = option.value = cat;
                         combobox.add(option);
                     }
@@ -303,6 +311,9 @@
                     flatten(response);
                 }
             }).send();
+            $('savetoDifferentDir').addEvent('click', () => {
+                $('saveTo_text').disabled = !$('savetoDifferentDir').checked;
+            })
             updateRulesList();
         };
 
@@ -336,15 +347,16 @@
                 method: 'post',
                 data: {
                     ruleName: rule,
-                    ruleDef: JSON.stringify(rulesList[rule])
+                    ruleDef: JSON.stringify(rulesList[rule][setting])
                 }
             }).send();
         }
 
         const addRule = function() {
+            console.log(rulesList);
             new MochaUI.Window({
                 id: 'newRulePage',
-                title: "QBT_TR(New rule name)QBT_TR[CONTEXT=RssReaderWidget]",
+                title: 'QBT_TR(New rule name)QBT_TR[CONTEXT=RssReaderWidget]',
                 loadMethod: 'iframe',
                 contentURL: 'newrule.html',
                 scrollbars: false,
@@ -357,9 +369,61 @@
             });
         };
 
+        const saveSettings = function() {
+            let lastSelectedRow = rssDownloaderRulesTable.selectedRows[rssDownloaderRulesTable.selectedRows.length - 1];
+            let rule = rssDownloaderRulesTable.rows[lastSelectedRow].full_data.name;
+
+            console.log(rulesList[rule]);
+            rulesList[rule].useRegex = $('useRegEx').checked;
+            rulesList[rule].mustContain = $('mustContain_text').value;
+            rulesList[rule].mustNotContain = $('mustNotContain_text').value;
+            rulesList[rule].episodeFilter = $('episodeFilter_text').value;
+            rulesList[rule].smartFilter = $('useSmartFilter').checked;
+            rulesList[rule].assignedCategory = $('assignCategory_combobox').value;
+            rulesList[rule].savePath = $('savetoDifferentDir').checked ? $('saveTo_text').value : "";
+            rulesList[rule].ignoreDays = parseInt($('ignoreDaysValue').value);
+
+            switch($('addPaused_combobox').value) {
+                case "default":
+                    rulesList[rule].addPaused = null;
+                    break;
+                case "always":
+                    rulesList[rule].addPaused = true;
+                    break;
+                case "never":
+                    rulesList[rule].addPaused = false;
+            }
+
+            switch($('creatSubfolder_combobox').value) {
+                case "default":
+                    rulesList[rule].createSubfolder = null;
+                    break;
+                case "always":
+                    rulesList[rule].createSubfolder = true;
+                    break;
+                case "never":
+                    rulesList[rule].createSubfolder = false;
+            }
+
+            rulesList[rule].affectedFeeds = rssDownloaderFeedSelectionTable.rows.filter(row => row.full_data.checked)
+                .map(row => row.full_data.url)
+                .getValues();
+            
+            new Request({
+                url: 'api/v2/rss/setRule',
+                noCache: true,
+                method: 'post',
+                data: {
+                    ruleName: rule,
+                    ruleDef: JSON.stringify(rulesList[rule])
+                }
+            }).send();
+        }
+
         const showRule = function(ruleName)  {
             if (ruleName == "") {
                 //disable all
+                $('saveButton').disabled = true;
                 $('useRegEx').disabled = true;
                 $('mustContain_text').disabled = true;
                 $('mustNotContain_text').disabled = true;
@@ -388,6 +452,7 @@
             }
             else {
                 //enable all
+                $('saveButton').disabled = false;
                 $('useRegEx').disabled = false;
                 $('mustContain_text').disabled = false;
                 $('mustNotContain_text').disabled = false;
@@ -395,7 +460,8 @@
                 $('useSmartFilter').disabled = false;
                 $('assignCategory_combobox').disabled = false;
                 $('savetoDifferentDir').disabled = false;
-                $('saveTo_text').disabled = false;
+                $('savetoDifferentDir').checked = rulesList[ruleName].savePath ? false : true;
+                $('saveTo_text').disabled = rulesList[ruleName].savePath ? false : true;
                 $('addPaused_combobox').disabled = false;
                 $('creatSubfolder_combobox').disabled = false;
 

@@ -2340,11 +2340,10 @@ window.qBittorrent.DynamicTable = (function() {
                     checkbox.checked = row.full_data.checked;
 
                     checkbox.addEvent('click', function(e) {
-                        //window.qBittorrent.RssDownloader.rssDownloaderRulesTable.updateRowData({
-                        //    rowId: row.rowId,
-                        //    checked: this.checked
-                        //});
-                        //window.qBittorrent.RssDownloader.modifyRuleState(row.full_data.name, 'enabled', this.checked);
+                        window.qBittorrent.RssDownloader.rssDownloaderFeedSelectionTable.updateRowData({
+                            rowId: row.rowId,
+                            checked: this.checked
+                        });
                         e.stopPropagation();
                     });
 
