@@ -14,11 +14,13 @@
     }
 
     #rulesTable {
+        overflow:auto;
         width: 100%;
         height: 100%;
     }
 
     #centerRssDownloaderColumn {
+        height: 100%;
         width: 50%;
         float: left;
     }
@@ -35,6 +37,17 @@
 
     .noWrap {
         white-space: nowrap;
+    }
+
+    #rssDownloaderFeeds {
+        height: calc(100% - 340px);
+        overflow: hidden;
+    }
+
+    #rssDownloaderFeedsTable {
+        height: calc(100% - 21px);
+        width: 100%;
+        overflow: auto;
     }
 </style>
 
@@ -165,16 +178,24 @@
                 </tr>
             </table>
         </fieldset>
-        <fieldset class="settings">
+        <fieldset class="settings" id="rssDownloaderFeeds">
             <legend>QBT_TR(Apply Rule to Feeds:)QBT_TR[CONTEXT=RssReaderWidget]</legend>
-
-            <div id="feedSelection_checkBoxList">
-                <input type="checkbox" id="Feed1" name="Feed1" value="Feed1">
-                <label for="Feed1">Feed 1</label><br>
-                <input type="checkbox" id="Feed2" name="Feed2" value="Feed2">
-                <label for="Feed2">Feed 2</label><br>
-                <input type="checkbox" id="Feed3" name="Feed3" value="Feed3">
-                <label for="Feed3">Feed 3</label><br>
+            <div id="rssDownloaderFeedsTable">
+                <div id="rssDownloaderFeedSelectionFixedHeaderDiv" class="dynamicTableFixedHeaderDiv invisible">
+                    <table class="dynamicTable unselectable" style="position:relative; width:100%">
+                        <thead style="width:100%">
+                            <tr class="dynamicTableHeader" style="width:100%"></tr>
+                        </thead>
+                    </table>
+                </div>
+                <div id="rssDownloaderFeedSelectionTableDiv" class="dynamicTableDiv">
+                    <table class="dynamicTable unselectable" style="width:100%">
+                        <thead style="width:100%">
+                            <tr class="dynamicTableHeader" style="width:100%"></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
     </fieldset>
     </div>
@@ -204,16 +225,20 @@
             return {
                 updateRulesList: updateRulesList,
                 showRule: showRule,
+                modifyRuleState: modifyRuleState,
                 rssDownloaderRulesTable: rssDownloaderRulesTable
             };
         };
 
-        let rssDownloaderRulesTable = new window.qBittorrent.DynamicTable.rssDownloaderRulesTable();
+        let rssDownloaderRulesTable = new window.qBittorrent.DynamicTable.RssDownloaderRulesTable();
         let rssDownloaderRuleContextMenu;
-        //let rssDownloaderArticlesTable = new window.qBittorrent.DynamicTable.rssDownloaderArticlesTable();
+        //let rssDownloaderArticlesTable = new window.qBittorrent.DynamicTable.RssDownloaderArticlesTable();
+
+        let rssDownloaderFeedSelectionTable = new window.qBittorrent.DynamicTable.RssDownloaderFeedSelectionTable();
+
 
         let rulesList;
-
+        let feedList;
 
         const initRssDownloader = function() {
             rssDownloaderRuleContextMenu = new window.qBittorrent.ContextMenu.RssDownloaderRuleContextMenu({
@@ -225,8 +250,8 @@
                     x: -22,
                     y: -4
                 }
-            });
-
+            }); 
+            rssDownloaderFeedSelectionTable.setup('rssDownloaderFeedSelectionTableDiv', 'rssDownloaderFeedSelectionFixedHeaderDiv');
             rssDownloaderRulesTable.setup('rssDownloaderRuleTableDiv', 'rssDownloaderRuleFixedHeaderDiv', rssDownloaderRuleContextMenu);
             rssDownloaderRuleContextMenu.addTarget($('rulesTable'));
             //deselect feed when clicking on empty part of table
@@ -243,7 +268,6 @@
                     showRule("")
                 }
             });
-            updateRulesList();
             //get all categories and add to combobox
             new Request.JSON({
                 url: 'api/v2/torrents/categories',
@@ -258,6 +282,28 @@
                     }
                 }
             }).send();
+            //get all rss feed
+            new Request.JSON({
+                url: 'api/v2/rss/items',
+                noCache: true,
+                method: 'post',
+                data: {
+                    withData: false
+                },
+                onSuccess: function(response) {
+                    feedList = [];
+                    function flatten(root) {
+                        for (let child in root) {
+                            if (root[child].uid !== undefined)
+                                feedList.push({name: child, url: root[child].url});
+                            else
+                                flatten(root[child]);
+                        }
+                    }
+                    flatten(response);
+                }
+            }).send();
+            updateRulesList();
         };
 
         const updateRulesList = function() {
@@ -277,6 +323,19 @@
                     }
                     rssDownloaderRulesTable.updateTable(false);
                     rulesList = response;
+                }
+            }).send();
+        }
+
+        const modifyRuleState = function(rule, setting, newState) {
+            rulesList[rule][setting] = newState;
+            new Request({
+                url: 'api/v2/rss/setRule',
+                noCache: true,
+                method: 'post',
+                data: {
+                    ruleName: rule,
+                    ruleDef: JSON.stringify(rulesList[rule])
                 }
             }).send();
         }
@@ -308,6 +367,7 @@
                 $('lastMatchText').innerHTML = "QBT_TR(Unknown)QBT_TR[CONTEXT=RssReaderWidget]";
                 $('addPaused_combobox').value = "default";
                 $('creatSubfolder_combobox').value = "default";
+                rssDownloaderFeedSelectionTable.clear();
             }
             else {
                 //enable all
@@ -343,11 +403,19 @@
                     $('creatSubfolder_combobox').value = "default";
                 else
                     $('creatSubfolder_combobox').value = rulesList[ruleName].createSubfolder ? "always" : "never";
-            }
 
-            /* Currently not read variables:
-            affectedFeeds: []
-            previouslyMatchedEpisodes: []*/
+                rssDownloaderFeedSelectionTable.clear();
+                let rowCount = 0;
+                feedList.forEach(feed => {
+                    rssDownloaderFeedSelectionTable.updateRowData({
+                        rowId: rowCount++,
+                        checked: rulesList[ruleName].affectedFeeds.contains(feed.url),
+                        name: feed.name,
+                        url: feed.url
+                    });
+                });
+                rssDownloaderFeedSelectionTable.updateTable(false);
+            }
         }
 
 
