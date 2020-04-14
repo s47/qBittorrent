@@ -18,6 +18,7 @@
         <file>private/newcategory.html</file>
         <file>private/newfeed.html</file>
         <file>private/newfolder.html</file>
+        <file>private/newrule.html</file>
         <file>private/newtag.html</file>
         <file>private/rename.html</file>
         <file>private/rename_feed.html</file>

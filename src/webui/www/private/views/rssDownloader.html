@@ -236,7 +236,6 @@
 
         let rssDownloaderFeedSelectionTable = new window.qBittorrent.DynamicTable.RssDownloaderFeedSelectionTable();
 
-
         let rulesList;
         let feedList;
 
@@ -245,6 +244,7 @@
                 targets: '',
                 menu: 'rssDownloaderRuleMenu',
                 actions: {
+                    addRule: addRule
                 },
                 offsets: {
                     x: -22,
@@ -313,6 +313,7 @@
                 noCache: true,
                 method: 'get',
                 onSuccess: function(response) {
+                    rssDownloaderRulesTable.clear();
                     let rowCount = 0;
                     for (let rule in response) {
                         rssDownloaderRulesTable.updateRowData({
@@ -339,6 +340,22 @@
                 }
             }).send();
         }
+
+        const addRule = function() {
+            new MochaUI.Window({
+                id: 'newRulePage',
+                title: "QBT_TR(New rule name)QBT_TR[CONTEXT=RssReaderWidget]",
+                loadMethod: 'iframe',
+                contentURL: 'newrule.html',
+                scrollbars: false,
+                resizable: false,
+                maximizable: false,
+                paddingVertical: 0,
+                paddingHorizontal: 0,
+                width: 350,
+                height: 100
+            });
+        };
 
         const showRule = function(ruleName)  {
             if (ruleName == "") {
