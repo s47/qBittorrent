@@ -522,7 +522,16 @@
                 $('savetoDifferentDir').checked = rulesList[ruleName].savePath != "";
                 $('saveTo_text').value = rulesList[ruleName].savePath;
                 $('ignoreDaysValue').value = rulesList[ruleName].ignoreDays;
-                $('lastMatchText').innerHTML = rulesList[ruleName].lastMatch ? rulesList[ruleName].lastMatch : "QBT_TR(Unknown)QBT_TR[CONTEXT=RssReaderWidget]";
+
+                //calculate days since last match
+                if (rulesList[ruleName].lastMatch != "") {
+                    let timeDiffInMs = new Date().getTime() - new Date(rulesList[ruleName].lastMatch).getTime();
+                    $('lastMatchText').innerHTML = Math.floor(timeDiffInMs / (1000 * 60 * 60 * 24)).toString() + " QBT_TR(days ago)QBT_TR[CONTEXT=RssReaderWidget]";
+                } 
+                else {
+                    $('lastMatchText').innerHTML = "QBT_TR(Unknown)QBT_TR[CONTEXT=RssReaderWidget]";
+                }
+
                 if (rulesList[ruleName].addPaused === null)
                     $('addPaused_combobox').value = "default";
                 else
