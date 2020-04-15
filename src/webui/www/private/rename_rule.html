@@ -19,11 +19,11 @@
                     event.preventDefault();
                 },
                 'Escape': function(event) {
-                    window.parent.closeWindows();
+                    window.parent.MochaUI.closeWindow(window.parent.$('renameRulePage'));
                     event.preventDefault();
                 },
                 'Esc': function(event) {
-                    window.parent.closeWindows();
+                    window.parent.MochaUI.closeWindow(window.parent.$('renameRulePage'));
                     event.preventDefault();
                 }
             }

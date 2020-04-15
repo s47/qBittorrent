@@ -254,6 +254,10 @@
                 menu: 'rssDownloaderRuleMenu',
                 actions: {
                     addRule: addRule,
+                    deleteRule: (el) => {
+                        removeRule(rssDownloaderRulesTable.selectedRows
+                            .map(sRow => rssDownloaderRulesTable.rows[sRow].full_data.name));
+                    },
                     renameRule: (el) => {
                         renameRule(rssDownloaderRulesTable.rows[rssDownloaderRulesTable.selectedRows[0]].full_data.name);
                     }
@@ -385,6 +389,21 @@
                 paddingHorizontal: 0,
                 width: 350,
                 height: 100
+            });
+        };
+
+        const removeRule = function(rules) {
+            new MochaUI.Window({
+                id: 'removeRulePage',
+                title: 'QBT_TR(Rule deletion confirmation)QBT_TR[CONTEXT=RssReaderWidget]',
+                loadMethod: 'iframe',
+                contentURL: 'confirmruledeletion.html?rules=' + encodeURIComponent(rules.join('|')),
+                scrollbars: false,
+                resizable: false,
+                maximizable: false,
+                padding: 10,
+                width: 350,
+                height: 80
             });
         };
 
