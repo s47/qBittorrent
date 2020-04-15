@@ -631,14 +631,14 @@
         <button style="margin: 0 1em; width: calc(100% - 2.2em)" onclick="window.qBittorrent.Rss.openRssDownloader();">QBT_TR(Edit auto downloading rules...)QBT_TR[CONTEXT=OptionsDialog]</button>
     </fieldset>
 
-    <!--<fieldset class="settings">
+    <fieldset class="settings">
         <legend>QBT_TR(RSS Smart Episode Filter)QBT_TR[CONTEXT=OptionsDialog]</legend>
         <div class="formRow">
             <input type="checkbox" id="downlock_repack_proper_episodes" />
             <label for="downlock_repack_proper_episodes">QBT_TR(Download REPACK/PROPER episodes)QBT_TR[CONTEXT=OptionsDialog]</label>
         </div>
         <textarea id="rss_filter_textarea" rows="6" cols="70"></textarea>
-    </fieldset>-->
+    </fieldset>
 </div>
 
 <div id="WebUITab" class="PrefTab invisible">
@@ -1767,6 +1767,8 @@
                         $('feed_refresh_interval').setProperty('value', pref.rss_refresh_interval);
                         $('maximum_article_number').setProperty('value', pref.rss_max_articles_per_feed);
                         $('enable_auto_downloading_rss_torrents_checkbox').setProperty('checked', pref.rss_auto_downloading_enabled);
+                        $('downlock_repack_proper_episodes').setProperty('checked', pref.rss_download_repack_proper_episodes);
+                        $('rss_filter_textarea').setProperty('value', pref.rss_smart_filters);
 
                         // Web UI tab
                         // Language
@@ -2121,6 +2123,8 @@
             settings.set('rss_refresh_interval', $('feed_refresh_interval').getProperty('value'));
             settings.set('rss_max_articles_per_feed', $('maximum_article_number').getProperty('value'));
             settings.set('rss_auto_downloading_enabled', $('enable_auto_downloading_rss_torrents_checkbox').getProperty('checked'));
+            settings.set('rss_download_repack_proper_episodes', $('downlock_repack_proper_episodes').getProperty('checked'));
+            settings.set('rss_smart_filters', $('rss_filter_textarea').getProperty('value'));
 
             // Web UI tab
             // Language
