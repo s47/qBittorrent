@@ -260,6 +260,11 @@
                     },
                     renameRule: (el) => {
                         renameRule(rssDownloaderRulesTable.rows[rssDownloaderRulesTable.selectedRows[0]].full_data.name);
+                    },
+                    clearDownloadedEpisodes: (el) => {
+                        rssDownloaderRulesTable.selectedRows.each(rowId => {
+                            clearDownloadedEpisodes(rssDownloaderRulesTable.rows[rowId].full_data.name);
+                        });
                     }
                 },
                 offsets: {
@@ -406,6 +411,10 @@
                 height: 80
             });
         };
+
+        const clearDownloadedEpisodes = function(rule) {
+            modifyRuleState(rule, "previouslyMatchedEpisodes", []);
+        }
 
         const saveSettings = function() {
             let lastSelectedRow = rssDownloaderRulesTable.selectedRows[rssDownloaderRulesTable.selectedRows.length - 1];
