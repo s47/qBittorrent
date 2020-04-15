@@ -2271,6 +2271,12 @@ window.qBittorrent.DynamicTable = (function() {
         getFilteredAndSortedRows: function() {
             return this.rows.getValues();
         },
+        setupTr: function(tr) {
+            tr.addEvent('dblclick', function(e) {
+                window.qBittorrent.RssDownloader.renameRule(this._this.rows.get(this.rowId).full_data.name);
+                return true;
+            });
+        },
         newColumn: function(name, style, caption, defaultWidth, defaultVisible) {
             const column = {};
             column['name'] = name;

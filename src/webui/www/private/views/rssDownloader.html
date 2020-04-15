@@ -231,6 +231,7 @@
             return {
                 updateRulesList: updateRulesList,
                 showRule: showRule,
+                renameRule: renameRule,
                 modifyRuleState: modifyRuleState,
                 saveSettings: saveSettings,
                 rssDownloaderRulesTable: rssDownloaderRulesTable,
@@ -252,7 +253,10 @@
                 targets: '',
                 menu: 'rssDownloaderRuleMenu',
                 actions: {
-                    addRule: addRule
+                    addRule: addRule,
+                    renameRule: (el) => {
+                        renameRule(rssDownloaderRulesTable.rows[rssDownloaderRulesTable.selectedRows[0]].full_data.name);
+                    }
                 },
                 offsets: {
                     x: -22,
@@ -353,7 +357,6 @@
         }
 
         const addRule = function() {
-            console.log(rulesList);
             new MochaUI.Window({
                 id: 'newRulePage',
                 title: 'QBT_TR(New rule name)QBT_TR[CONTEXT=RssReaderWidget]',
@@ -369,11 +372,26 @@
             });
         };
 
+        const renameRule = function(rule) {
+            new MochaUI.Window({
+                id: 'renameRulePage',
+                title: 'QBT_TR(Rule renaming)QBT_TR[CONTEXT=RssReaderWidget]',
+                loadMethod: 'iframe',
+                contentURL: 'rename_rule.html?rule=' + encodeURIComponent(rule),
+                scrollbars: false,
+                resizable: false,
+                maximizable: false,
+                paddingVertical: 0,
+                paddingHorizontal: 0,
+                width: 350,
+                height: 100
+            });
+        };
+
         const saveSettings = function() {
             let lastSelectedRow = rssDownloaderRulesTable.selectedRows[rssDownloaderRulesTable.selectedRows.length - 1];
             let rule = rssDownloaderRulesTable.rows[lastSelectedRow].full_data.name;
 
-            console.log(rulesList[rule]);
             rulesList[rule].useRegex = $('useRegEx').checked;
             rulesList[rule].mustContain = $('mustContain_text').value;
             rulesList[rule].mustNotContain = $('mustNotContain_text').value;
