@@ -47,6 +47,16 @@
     #rssFeedTableDiv, #rssArticleTableDiv {
         height: calc(100vh - 180px);
     }
+
+    #rssTorrentDetailsName {
+        background-color: #678db2;
+        padding: 0;
+        color: white;
+    }
+
+    #rssTorrentDetailsDate {
+        background-color: #EFEFEF;
+    }
     
 </style>
 
@@ -366,14 +376,22 @@
             if (article) {
                 $('rssDetailsView').append((() => {
                     let torrentName = document.createElement('p');
-                    torrentName.innerText = "Name: " + article.title;
+                    torrentName.innerText = article.title;
                     torrentName.setAttribute("id", "rssTorrentDetailsName");
                     return torrentName;
                 })());
                 $('rssDetailsView').append((() => {
-                    let torrentDate = document.createElement('p');
-                    torrentDate.innerText = "Date: " + article.date;
+                    let torrentDate = document.createElement('div');
                     torrentDate.setAttribute("id", "rssTorrentDetailsDate");
+
+                    let torrentDateDesc = document.createElement('b');
+                    torrentDateDesc.innerText = "Date: ";
+                    torrentDate.append(torrentDateDesc);
+
+                    let torrentDateData = document.createElement('span');
+                    torrentDateData.innerText = new Date(article.date).toLocaleString();
+                    torrentDate.append(torrentDateData);
+
                     return torrentDate;
                 })());
                 //Strip script before interpreting html
