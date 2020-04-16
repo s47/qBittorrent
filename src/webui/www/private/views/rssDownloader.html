@@ -262,9 +262,8 @@
                         renameRule(rssDownloaderRulesTable.rows[rssDownloaderRulesTable.selectedRows[0]].full_data.name);
                     },
                     clearDownloadedEpisodes: (el) => {
-                        rssDownloaderRulesTable.selectedRows.each(rowId => {
-                            clearDownloadedEpisodes(rssDownloaderRulesTable.rows[rowId].full_data.name);
-                        });
+                        clearDownloadedEpisodes(rssDownloaderRulesTable.selectedRows
+                            .map(sRow => rssDownloaderRulesTable.rows[sRow].full_data.name));
                     }
                 },
                 offsets: {
@@ -352,7 +351,7 @@
             }).send();
         }
 
-        const modifyRuleState = function(rule, setting, newState) {
+        const modifyRuleState = function(rule, setting, newState, callback = () => {}) {
             rulesList[rule][setting] = newState;
             new Request({
                 url: 'api/v2/rss/setRule',
@@ -360,7 +359,10 @@
                 method: 'post',
                 data: {
                     ruleName: rule,
-                    ruleDef: JSON.stringify(rulesList[rule][setting])
+                    ruleDef: JSON.stringify(rulesList[rule])
+                },
+                onSuccess: function() {
+                    callback();
                 }
             }).send();
         }
@@ -412,8 +414,18 @@
             });
         };
 
-        const clearDownloadedEpisodes = function(rule) {
-            modifyRuleState(rule, "previouslyMatchedEpisodes", []);
+        const clearDownloadedEpisodes = function(rules) {
+            new MochaUI.Window({
+                id: 'clearRulesPage',
+                title: 'QBT_TR(New rule name)QBT_TR[CONTEXT=RssReaderWidget]',
+                loadMethod: 'iframe',
+                contentURL: 'confirmruleclear.html?rules=' + encodeURIComponent(rules.join('|')),
+                scrollbars: false,
+                resizable: false,
+                maximizable: false,
+                width: 350,
+                height: 85
+            });
         }
 
         const saveSettings = function() {
