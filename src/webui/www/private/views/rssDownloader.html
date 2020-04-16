@@ -14,7 +14,7 @@
     }
 
     #rulesTable {
-        overflow:auto;
+        overflow: auto;
         width: 100%;
         height: 100%;
     }
@@ -29,7 +29,7 @@
         width: 25%;
         float: left;
     }
-    
+
     .fullWidth {
         width: 100%;
         max-width: none;
@@ -141,7 +141,7 @@
                         <label class="noWrap" for="saveTo_text">QBT_TR(Save to:)QBT_TR[CONTEXT=RssReaderWidget]</label>
                     </td>
                     <td class="fullWidth">
-                        <input disabled type="text" class="fullWidth" id="saveTo_text" autocorrect="off" autocapitalize="none"/>
+                        <input disabled type="text" class="fullWidth" id="saveTo_text" autocorrect="off" autocapitalize="none" />
                     </td>
                 </tr>
             </table>
@@ -203,7 +203,9 @@
                 </div>
             </div>
         </fieldset>
-        <button disabled id="saveButton" onclick="qBittorrent.RssDownloader.saveSettings()">QBT_TR(Save)QBT_TR[CONTEXT=RssReaderWidget]</button>
+        <button disabled id="saveButton" onclick="qBittorrent.RssDownloader.saveSettings()">
+            QBT_TR(Save)QBT_TR[CONTEXT=RssReaderWidget]
+        </button>
     </div>
     <div id="rightRssDownloaderColumn">
         <b>QBT_TR(Matching RSS Articles:)QBT_TR[CONTEXT=RssReaderWidget]</b>
@@ -213,10 +215,10 @@
 </div>
 
 <ul id="rssDownloaderRuleMenu" class="contextMenu">
-    <li><a href="#addRule"><img src="images/qbt-theme/document-new.svg" alt="QBT_TR(Add new rule...)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Add new rule...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
-    <li><a href="#deleteRule"><img src="images/qbt-theme/list-remove.svg" alt="QBT_TR(Delete rule)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Delete rule)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
-    <li class="separator"><a href="#renameRule"><img src="images/qbt-theme/edit-rename.svg" alt="QBT_TR(Rename rule...)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Rename rule...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
-    <li class="separator"><a href="#clearDownloadedEpisodes"><img src="images/qbt-theme/edit-clear.svg" alt="QBT_TR(Clear downloaded episodes...)QBT_TR[CONTEXT=RssReaderWidget]"/> QBT_TR(Clear downloaded episodes...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
+    <li><a href="#addRule"><img src="images/qbt-theme/document-new.svg" alt="QBT_TR(Add new rule...)QBT_TR[CONTEXT=RssReaderWidget]" /> QBT_TR(Add new rule...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
+    <li><a href="#deleteRule"><img src="images/qbt-theme/list-remove.svg" alt="QBT_TR(Delete rule)QBT_TR[CONTEXT=RssReaderWidget]" /> QBT_TR(Delete rule)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
+    <li class="separator"><a href="#renameRule"><img src="images/qbt-theme/edit-rename.svg" alt="QBT_TR(Rename rule...)QBT_TR[CONTEXT=RssReaderWidget]" /> QBT_TR(Rename rule...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
+    <li class="separator"><a href="#clearDownloadedEpisodes"><img src="images/qbt-theme/edit-clear.svg" alt="QBT_TR(Clear downloaded episodes...)QBT_TR[CONTEXT=RssReaderWidget]" /> QBT_TR(Clear downloaded episodes...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
 </ul>
 
 <script>
@@ -270,7 +272,7 @@
                     x: -22,
                     y: -4
                 }
-            }); 
+            });
             rssDownloaderFeedSelectionTable.setup('rssDownloaderFeedSelectionTableDiv', 'rssDownloaderFeedSelectionFixedHeaderDiv');
             rssDownloaderRulesTable.setup('rssDownloaderRuleTableDiv', 'rssDownloaderRuleFixedHeaderDiv', rssDownloaderRuleContextMenu);
             rssDownloaderRuleContextMenu.addTarget($('rulesTable'));
@@ -376,8 +378,6 @@
                 scrollbars: false,
                 resizable: false,
                 maximizable: false,
-                paddingVertical: 0,
-                paddingHorizontal: 0,
                 width: 350,
                 height: 100
             });
@@ -392,8 +392,6 @@
                 scrollbars: false,
                 resizable: false,
                 maximizable: false,
-                paddingVertical: 0,
-                paddingHorizontal: 0,
                 width: 350,
                 height: 100
             });
@@ -408,8 +406,7 @@
                 scrollbars: false,
                 resizable: false,
                 maximizable: false,
-                padding: 10,
-                width: 350,
+                width: 360,
                 height: 80
             });
         };
@@ -441,7 +438,7 @@
             rulesList[rule].savePath = $('savetoDifferentDir').checked ? $('saveTo_text').value : "";
             rulesList[rule].ignoreDays = parseInt($('ignoreDaysValue').value);
 
-            switch($('addPaused_combobox').value) {
+            switch ($('addPaused_combobox').value) {
                 case "default":
                     rulesList[rule].addPaused = null;
                     break;
@@ -452,7 +449,7 @@
                     rulesList[rule].addPaused = false;
             }
 
-            switch($('creatSubfolder_combobox').value) {
+            switch ($('creatSubfolder_combobox').value) {
                 case "default":
                     rulesList[rule].createSubfolder = null;
                     break;
@@ -466,7 +463,7 @@
             rulesList[rule].affectedFeeds = rssDownloaderFeedSelectionTable.rows.filter(row => row.full_data.checked)
                 .map(row => row.full_data.url)
                 .getValues();
-            
+
             new Request({
                 url: 'api/v2/rss/setRule',
                 noCache: true,
@@ -478,7 +475,7 @@
             }).send();
         }
 
-        const showRule = function(ruleName)  {
+        const showRule = function(ruleName) {
             if (ruleName == "") {
                 //disable all
                 $('saveButton').disabled = true;
@@ -529,7 +526,7 @@
                 $('mustNotContain_text').value = rulesList[ruleName].mustNotContain;
                 $('episodeFilter_text').value = rulesList[ruleName].episodeFilter;
                 $('useSmartFilter').checked = rulesList[ruleName].smartFilter;
-                
+
                 $('assignCategory_combobox').value = rulesList[ruleName].assignedCategory ? rulesList[ruleName].assignedCategory : "default";
                 $('savetoDifferentDir').checked = rulesList[ruleName].savePath != "";
                 $('saveTo_text').value = rulesList[ruleName].savePath;
@@ -539,7 +536,7 @@
                 if (rulesList[ruleName].lastMatch != "") {
                     let timeDiffInMs = new Date().getTime() - new Date(rulesList[ruleName].lastMatch).getTime();
                     $('lastMatchText').innerHTML = Math.floor(timeDiffInMs / (1000 * 60 * 60 * 24)).toString() + " QBT_TR(days ago)QBT_TR[CONTEXT=RssReaderWidget]";
-                } 
+                }
                 else {
                     $('lastMatchText').innerHTML = "QBT_TR(Unknown)QBT_TR[CONTEXT=RssReaderWidget]";
                 }

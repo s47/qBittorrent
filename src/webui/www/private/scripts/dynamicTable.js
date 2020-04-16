@@ -2074,7 +2074,7 @@ window.qBittorrent.DynamicTable = (function() {
                 let td;
                 for (let i = 0; i < this.tableBody.rows.length; ++i) {
                     if (this.tableBody.rows[i].rowId == row.rowId) {
-                        td =  this.tableBody.rows[i].children[0];
+                        td = this.tableBody.rows[i].children[0];
                         break;
                     }
                 }
@@ -2106,7 +2106,7 @@ window.qBittorrent.DynamicTable = (function() {
             if (defaultWidth != -1) {
                 column['width'] = defaultWidth;
             }
-            
+
             column['dataProperties'] = [name];
             column['getRowValue'] = function(row, pos) {
                 if (pos === undefined)
@@ -2202,7 +2202,7 @@ window.qBittorrent.DynamicTable = (function() {
             if (defaultWidth != -1) {
                 column['width'] = defaultWidth;
             }
-            
+
             column['dataProperties'] = [name];
             column['getRowValue'] = function(row, pos) {
                 if (pos === undefined)
@@ -2288,7 +2288,7 @@ window.qBittorrent.DynamicTable = (function() {
             if (defaultWidth != -1) {
                 column['width'] = defaultWidth;
             }
-            
+
             column['dataProperties'] = [name];
             column['getRowValue'] = function(row, pos) {
                 if (pos === undefined)
@@ -2375,7 +2375,7 @@ window.qBittorrent.DynamicTable = (function() {
             if (defaultWidth != -1) {
                 column['width'] = defaultWidth;
             }
-            
+
             column['dataProperties'] = [name];
             column['getRowValue'] = function(row, pos) {
                 if (pos === undefined)
