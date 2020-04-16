@@ -761,9 +761,13 @@
                 contentURL: 'views/rssDownloader.html',
                 maximizable: false,
                 width: loadWindowWidth(id, 800),
-                height: loadWindowHeight(id, 600),
+                height: loadWindowHeight(id, 650),
                 onResize: function() {
                     saveWindowSize(id);
+                },
+                resizeLimit: {
+                    "x" :[800,2500],
+                    "y" :[500,2000]
                 }
             });
         };
