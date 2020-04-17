@@ -51,4 +51,5 @@ private slots:
     void renameRuleAction();
     void removeRuleAction();
     void rulesAction();
+    void matchingArticlesAction();
 };

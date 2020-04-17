@@ -217,6 +217,22 @@ void AutoDownloader::removeRule(const QString &ruleName)
     }
 }
 
+QList<Article *> AutoDownloader::matchingArticles(const QString &ruleName)
+{
+    RSS::AutoDownloadRule rule = ruleByName(ruleName);
+    QList<Article *> articles;
+
+    for (const QString &feedURL : asConst(rule.feedURLs())) {
+        auto feed = RSS::Session::instance()->feedByURL(feedURL);
+        if (!feed) continue; // feed doesn't exist
+
+        for (const auto article : asConst(feed->articles()))
+            if (rule.matches(article->data()))
+                articles << article;
+    }
+    return articles;
+}
+
 QByteArray AutoDownloader::exportRules(AutoDownloader::RulesFileFormat format) const
 {
     switch (format) {

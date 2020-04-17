@@ -31,6 +31,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QJsonArray>
 
 #include "base/rss/rss_article.h"
 #include "base/rss/rss_autodownloader.h"
@@ -163,5 +164,28 @@ void RSSController::rulesAction()
     for (const auto &rule : rules)
         jsonObj.insert(rule.name(), rule.toJsonObject());
 
+    setResult(jsonObj);
+}
+
+void RSSController::matchingArticlesAction()
+{
+    requireParams({"ruleName"});
+
+    const QString ruleName {params()["ruleName"].trimmed()};
+    const QList<RSS::Article *> articles {RSS::AutoDownloader::instance()->matchingArticles(ruleName)};
+
+    QJsonObject jsonObj;
+    for (const auto &article : articles) {
+        QString feedName = article->feed()->name();
+        if (!jsonObj.contains(feedName)) {
+            QJsonArray newArray {article->title()};
+            jsonObj.insert(feedName, newArray);
+        }
+        else {
+            QJsonArray keyArray = jsonObj[feedName].toArray();
+            keyArray.push_back(article->title());
+            jsonObj.insert(feedName, keyArray);
+        }
+    }
     setResult(jsonObj);
 }

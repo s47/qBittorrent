@@ -97,6 +97,8 @@ namespace RSS
         bool renameRule(const QString &ruleName, const QString &newRuleName);
         void removeRule(const QString &ruleName);
 
+        QList<Article *> matchingArticles(const QString &ruleName);
+
         QByteArray exportRules(RulesFileFormat format = RulesFileFormat::JSON) const;
         void importRules(const QByteArray &data, RulesFileFormat format = RulesFileFormat::JSON);
 
