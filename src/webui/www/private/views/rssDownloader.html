@@ -26,6 +26,7 @@
     }
 
     #rightRssDownloaderColumn {
+        height: 100%;
         width: 25%;
         float: left;
     }
@@ -44,7 +45,7 @@
         overflow: hidden;
     }
 
-    #rssDownloaderFeedsTable {
+    #rssDownloaderFeedsTable , #rssDownloaderArticlesTable {
         height: calc(100% - 21px);
         width: 100%;
         overflow: auto;
@@ -53,6 +54,14 @@
     #saveButton {
         margin-top: 5px;
         width: 100%;
+    }
+
+    .articleTableFeed td {
+        font-weight: bold;
+    }
+
+    .articleTableArticle td {
+        padding-left: 22px;
     }
 </style>
 
@@ -209,7 +218,22 @@
     </div>
     <div id="rightRssDownloaderColumn">
         <b>QBT_TR(Matching RSS Articles:)QBT_TR[CONTEXT=RssReaderWidget]</b>
-        <div id="articleList">
+        <div id="rssDownloaderArticlesTable">
+            <div id="rssDownloaderArticlesFixedHeaderDiv" class="dynamicTableFixedHeaderDiv invisible">
+                <table class="dynamicTable unselectable" style="position:relative; width:100%">
+                    <thead style="width:100%">
+                        <tr class="dynamicTableHeader" style="width:100%"></tr>
+                    </thead>
+                </table>
+            </div>
+            <div id="rssDownloaderArticlesTableDiv" class="dynamicTableDiv">
+                <table class="dynamicTable unselectable" style="width:100%">
+                    <thead style="width:100%">
+                        <tr class="dynamicTableHeader" style="width:100%"></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -243,9 +267,8 @@
 
         let rssDownloaderRulesTable = new window.qBittorrent.DynamicTable.RssDownloaderRulesTable();
         let rssDownloaderRuleContextMenu;
-        //let rssDownloaderArticlesTable = new window.qBittorrent.DynamicTable.RssDownloaderArticlesTable();
-
         let rssDownloaderFeedSelectionTable = new window.qBittorrent.DynamicTable.RssDownloaderFeedSelectionTable();
+        let rssDownloaderArticlesTable = new window.qBittorrent.DynamicTable.RssDownloaderArticlesTable();
 
         let rulesList;
         let feedList;
@@ -273,8 +296,10 @@
                     y: -4
                 }
             });
-            rssDownloaderFeedSelectionTable.setup('rssDownloaderFeedSelectionTableDiv', 'rssDownloaderFeedSelectionFixedHeaderDiv');
             rssDownloaderRulesTable.setup('rssDownloaderRuleTableDiv', 'rssDownloaderRuleFixedHeaderDiv', rssDownloaderRuleContextMenu);
+            rssDownloaderFeedSelectionTable.setup('rssDownloaderFeedSelectionTableDiv', 'rssDownloaderFeedSelectionFixedHeaderDiv');
+            rssDownloaderArticlesTable.setup('rssDownloaderArticlesTableDiv', 'rssDownloaderArticlesFixedHeaderDiv');
+
             rssDownloaderRuleContextMenu.addTarget($('rulesTable'));
             //deselect feed when clicking on empty part of table
             $('rulesTable').addEventListener("click", function(e) {
@@ -471,6 +496,39 @@
                 data: {
                     ruleName: rule,
                     ruleDef: JSON.stringify(rulesList[rule])
+                },
+                onSuccess: function() {
+                    updateMatchingArticles(rule);
+                }
+            }).send();
+        }
+
+        const updateMatchingArticles = function(ruleName) {
+            new Request.JSON({
+                url: 'api/v2/rss/matchingArticles',
+                noCache: true,
+                method: 'post',
+                data: {
+                    ruleName: ruleName
+                },
+                onSuccess: function(response) {
+                    rssDownloaderArticlesTable.clear();
+                    let rowCount = 0;
+                    for (let feed in response) {
+                        rssDownloaderArticlesTable.updateRowData({
+                            rowId: rowCount++,
+                            name: feed,
+                            isFeed: true
+                        });
+                        response[feed].each(article => {
+                            rssDownloaderArticlesTable.updateRowData({
+                                rowId: rowCount++,
+                                name: article,
+                                isFeed: false
+                            });
+                        });
+                    }
+                    rssDownloaderArticlesTable.updateTable(false);
                 }
             }).send();
         }
@@ -504,6 +562,7 @@
                 $('addPaused_combobox').value = "default";
                 $('creatSubfolder_combobox').value = "default";
                 rssDownloaderFeedSelectionTable.clear();
+                rssDownloaderArticlesTable.clear();
             }
             else {
                 //enable all
@@ -562,6 +621,7 @@
                     });
                 });
                 rssDownloaderFeedSelectionTable.updateTable(false);
+                updateMatchingArticles(ruleName);
             }
         }
 

@@ -49,7 +49,8 @@ window.qBittorrent.DynamicTable = (function() {
             RssFeedTable: RssFeedTable,
             RssArticleTable: RssArticleTable,
             RssDownloaderRulesTable: RssDownloaderRulesTable,
-            RssDownloaderFeedSelectionTable: RssDownloaderFeedSelectionTable
+            RssDownloaderFeedSelectionTable: RssDownloaderFeedSelectionTable,
+            RssDownloaderArticlesTable: RssDownloaderArticlesTable
         };
     };
 
@@ -2403,6 +2404,77 @@ window.qBittorrent.DynamicTable = (function() {
         },
         selectRow: function() {}
     });
+
+    const RssDownloaderArticlesTable = new Class({
+        Extends: DynamicTable,
+        initColumns: function() {
+            this.newColumn('name', '', '', -1, true);
+        },
+        setupHeaderMenu: function() {},
+        setupHeaderEvents: function() {},
+        getFilteredAndSortedRows: function() {
+            return this.rows.getValues();
+        },
+        newColumn: function(name, style, caption, defaultWidth, defaultVisible) {
+            const column = {};
+            column['name'] = name;
+            column['title'] = name;
+            column['visible'] = defaultVisible;
+            column['force_hide'] = false;
+            column['caption'] = caption;
+            column['style'] = style;
+            if (defaultWidth != -1) {
+                column['width'] = defaultWidth;
+            }
+
+            column['dataProperties'] = [name];
+            column['getRowValue'] = function(row, pos) {
+                if (pos === undefined)
+                    pos = 0;
+                return row['full_data'][this.dataProperties[pos]];
+            };
+            column['compareRows'] = function(row1, row2) {
+                if (this.getRowValue(row1) < this.getRowValue(row2))
+                    return -1;
+                else if (this.getRowValue(row1) > this.getRowValue(row2))
+                    return 1;
+                else return 0;
+            };
+            column['updateTd'] = function(td, row) {
+                const value = this.getRowValue(row)
+                td.set('text', value);
+                td.set('title', value);
+            };
+            column['onResize'] = null;
+            this.columns.push(column);
+            this.columns[name] = column;
+
+            this.hiddenTableHeader.appendChild(new Element('th'));
+            this.fixedTableHeader.appendChild(new Element('th'));
+        },
+        selectRow: function() {},
+        updateRow: function(tr, fullUpdate) {
+            const row = this.rows.get(tr.rowId);
+            const data = row[fullUpdate ? 'full_data' : 'data'];
+
+            if (row.full_data.isFeed) {
+                tr.addClass("articleTableFeed");
+                tr.removeClass("articleTableArticle");
+            }
+            else {
+                tr.removeClass("articleTableFeed");
+                tr.addClass("articleTableArticle");
+            }
+            
+            const tds = tr.getElements('td');
+            for (let i = 0; i < this.columns.length; ++i) {
+                if (data.hasOwnProperty(this.columns[i].dataProperties[0]))
+                    this.columns[i].updateTd(tds[i], row);
+            }
+            row['data'] = {};
+        }
+    });
+    
 
     return exports();
 })();
