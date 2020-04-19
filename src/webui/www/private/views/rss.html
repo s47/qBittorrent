@@ -221,9 +221,14 @@
                         moveItem(rssFeedTable.rows[rssFeedTable.selectedRows[0]].full_data.dataPath);
                     },
                     delete: (el) => {
-                        removeItem(rssFeedTable.selectedRows
+                        let selectedDatapaths = rssFeedTable.selectedRows
                             .filter(e => e != 0)
-                            .map(sRow => rssFeedTable.rows[sRow].full_data.dataPath));
+                            .map(sRow => rssFeedTable.rows[sRow].full_data.dataPath);
+                        //filter children
+                        let reducedDatapaths = selectedDatapaths.filter(path => 
+                            selectedDatapaths.filter(innerPath => path.slice(0, innerPath.length) == innerPath).length == 1
+                        );
+                        removeItem(reducedDatapaths);
                     },
                     newSubscription: addRSSFeed,
                     newFolder: addFolder,
@@ -468,7 +473,6 @@
                     if (match) {
                         //partial refresh
                         //update status
-                        var statusDiffers = false;
                         for (let i = 0; i < flattenedResp.length; ++i) {
                             let oldStatus = rssFeedTable.rows[i + 1].full_data.status;
                             let status = "default";
