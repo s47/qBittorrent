@@ -608,7 +608,7 @@
                     <label for="feed_refresh_interval">QBT_TR(Feeds refresh interval:)QBT_TR[CONTEXT=OptionsDialog]</label>
                 </td>
                 <td>
-                    <input type="text" id="feed_refresh_interval" style="width: 4em;" />&nbsp;&nbsp;QBT_TR(min)QBT_TR[CONTEXT=OptionsDialog]
+                    <input type="text" id="feed_refresh_interval" style="width: 4em;" />&nbsp;&nbsp;QBT_TR( min)QBT_TR[CONTEXT=OptionsDialog]
                 </td>
             </tr>
             <tr>
@@ -635,8 +635,10 @@
         <legend>QBT_TR(RSS Smart Episode Filter)QBT_TR[CONTEXT=OptionsDialog]</legend>
         <div class="formRow">
             <input type="checkbox" id="downlock_repack_proper_episodes" />
+
             <label for="downlock_repack_proper_episodes">QBT_TR(Download REPACK/PROPER episodes)QBT_TR[CONTEXT=OptionsDialog]</label>
         </div>
+        <label for="rss_filter_textarea">QBT_TR(Filters:)QBT_TR[CONTEXT=OptionsDialog]</label><br>
         <textarea id="rss_filter_textarea" rows="6" cols="70"></textarea>
     </fieldset>
 </div>

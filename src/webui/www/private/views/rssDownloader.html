@@ -70,10 +70,10 @@
 
 <div id="RssDownloader" class="RssDownloader">
     <div id="rssDownloaderDisabled" class="invisible">
-        QBT_TR(Auto downloading of RSS torrents is disabled now! You can enable it in application settings.)QBT_TR[CONTEXT=RssReaderWidget]
+        QBT_TR(Auto downloading of RSS torrents is disabled now! You can enable it in application settings.)QBT_TR[CONTEXT=AutomatedRssDownloader]
     </div>
     <div id="leftRssDownloaderColumn">
-        <b id="rulesTableDesc">QBT_TR(Download Rules)QBT_TR[CONTEXT=RssReaderWidget]</b>
+        <b id="rulesTableDesc">QBT_TR(Download Rules)QBT_TR[CONTEXT=AutomatedRssDownloader]</b>
         <div id="rulesTable">
             <div id="rulesSelection_checkBoxList">
                 <div id="rssDownloaderRuleFixedHeaderDiv" class="dynamicTableFixedHeaderDiv invisible">
@@ -96,15 +96,15 @@
     </div>
     <div id="centerRssDownloaderColumn">
         <fieldset class="settings" id="ruleSettings">
-            <legend>QBT_TR(Rule Definition)QBT_TR[CONTEXT=RssReaderWidget]</legend>
+            <legend>QBT_TR(Rule Definition)QBT_TR[CONTEXT=AutomatedRssDownloader]</legend>
             <div class="formRow">
                 <input disabled type="checkbox" id="useRegEx" />
-                <label for="useRegEx">QBT_TR(Use Regular Expressions)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                <label for="useRegEx">QBT_TR(Use Regular Expressions)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
             </div>
             <table class="fullWidth">
                 <tr>
                     <td>
-                        <label for="mustContain_text" class="noWrap">QBT_TR(Must Contain:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                        <label for="mustContain_text" class="noWrap">QBT_TR(Must Contain:)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
                     </td>
                     <td class="fullWidth">
                         <input disabled type="text" id="mustContain_text" class="fullWidth" autocorrect="off" autocapitalize="none" />
@@ -112,7 +112,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <label for="mustNotContain_text" class="noWrap">QBT_TR(Must Not Contain:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                        <label for="mustNotContain_text" class="noWrap">QBT_TR(Must Not Contain:)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
                     </td>
                     <td class="fullWidth">
                         <input disabled type="text" id="mustNotContain_text" class="fullWidth" autocorrect="off" autocapitalize="none" />
@@ -120,7 +120,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <label for="episodeFilter_text" class="noWrap">QBT_TR(Episode Filter:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                        <label for="episodeFilter_text" class="noWrap">QBT_TR(Episode Filter:)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
                     </td>
                     <td class="fullWidth">
                         <input disabled type="text" id="episodeFilter_text" class="fullWidth" autocorrect="off" autocapitalize="none" />
@@ -129,7 +129,7 @@
             </table>
             <div class="formRow">
                 <input disabled type="checkbox" id="useSmartFilter" />
-                <label for="useSmartFilter">QBT_TR(Use Smart Episode Filter)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                <label for="useSmartFilter">QBT_TR(Use Smart Episode Filter)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
             </div>
 
             <hr>
@@ -137,7 +137,7 @@
             <table class="fullWidth">
                 <tr>
                     <td>
-                        <label class="noWrap">QBT_TR(Assign Category:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                        <label class="noWrap">QBT_TR(Assign Category:)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
                     </td>
                     <td class="fullWidth">
                         <select disabled id="assignCategory_combobox" class="fullWidth">
@@ -148,12 +148,12 @@
             </table>
             <div class="formRow">
                 <input disabled type="checkbox" id="savetoDifferentDir" />
-                <label for="savetoDifferentDir">QBT_TR(Save to a Differnet Directory)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                <label for="savetoDifferentDir">QBT_TR(Save to a Different Directory)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
             </div>
             <table class="fullWidth">
                 <tr>
                     <td>
-                        <label class="noWrap" for="saveTo_text">QBT_TR(Save to:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                        <label class="noWrap" for="saveTo_text">QBT_TR(Save to:)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
                     </td>
                     <td class="fullWidth">
                         <input disabled type="text" class="fullWidth" id="saveTo_text" autocorrect="off" autocapitalize="none" />
@@ -162,23 +162,23 @@
             </table>
             <table>
                 <tr>
-                    <td><label for="ignoreDaysValue">QBT_TR(Ignore Subsequent Matches for (0 to Disable))QBT_TR[CONTEXT=RssReaderWidget]</label></td>
-                    <td><input type="number" id="ignoreDaysValue" style="width: 4em;" min="0" />&nbsp;&nbsp;QBT_TR(Days)QBT_TR[CONTEXT=RssReaderWidget]</td>
+                    <td><label for="ignoreDaysValue">QBT_TR(Ignore Subsequent Matches for (0 to Disable))QBT_TR[CONTEXT=AutomatedRssDownloader]</label></td>
+                    <td><input type="number" id="ignoreDaysValue" style="width: 4em;" min="0" />&nbsp;&nbsp;QBT_TR( days)QBT_TR[CONTEXT=AutomatedRssDownloader]</td>
                 </tr>
             </table>
             <div style="float:right">
-                Last Match: <span id="lastMatchText">QBT_TR(Unknown)QBT_TR[CONTEXT=RssReaderWidget]</span>
+                <span id="lastMatchText">QBT_TR(Last Match: Unknown)QBT_TR[CONTEXT=AutomatedRssDownloader]</span>
             </div>
             <table class="fullWidth">
                 <tr>
                     <td>
-                        <label class="noWrap">QBT_TR(Add Paused:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                        <label class="noWrap">QBT_TR(Add Paused:)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
                     </td>
                     <td class="fullWidth">
                         <select disabled id="addPaused_combobox" class="fullWidth">
-                            <option value="default">Use global Settings</option>
-                            <option value="always">Always</option>
-                            <option value="never">Never</option>
+                            <option value="default">QBT_TR(Use global settings)QBT_TR[CONTEXT=AutomatedRssDownloader]</option>
+                            <option value="always">QBT_TR(Always)QBT_TR[CONTEXT=AutomatedRssDownloader]</option>
+                            <option value="never">QBT_TR(Never)QBT_TR[CONTEXT=AutomatedRssDownloader]</option>
                         </select>
                     </td>
                 </tr>
@@ -186,20 +186,20 @@
             <table class="fullWidth">
                 <tr>
                     <td>
-                        <label class="noWrap">QBT_TR(Create Subfolder:)QBT_TR[CONTEXT=RssReaderWidget]</label>
+                        <label class="noWrap">QBT_TR(Create Subfolder:)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
                     </td>
                     <td class="fullWidth">
                         <select disabled id="creatSubfolder_combobox" class="fullWidth">
-                            <option value="default">Use global Settings</option>
-                            <option value="always">Always</option>
-                            <option value="never">Never</option>
+                            <option value="default">QBT_TR(Use global settings)QBT_TR[CONTEXT=AutomatedRssDownloader]</option>
+                            <option value="always">QBT_TR(Always)QBT_TR[CONTEXT=AutomatedRssDownloader]</option>
+                            <option value="never">QBT_TR(Never)QBT_TR[CONTEXT=AutomatedRssDownloader]</option>
                         </select>
                     </td>
                 </tr>
             </table>
         </fieldset>
         <fieldset class="settings" id="rssDownloaderFeeds">
-            <legend>QBT_TR(Apply Rule to Feeds:)QBT_TR[CONTEXT=RssReaderWidget]</legend>
+            <legend>QBT_TR(Apply Rule to Feeds:)QBT_TR[CONTEXT=AutomatedRssDownloader]</legend>
             <div id="rssDownloaderFeedsTable">
                 <div id="rssDownloaderFeedSelectionFixedHeaderDiv" class="dynamicTableFixedHeaderDiv invisible">
                     <table class="dynamicTable unselectable" style="position:relative; width:100%">
@@ -219,11 +219,11 @@
             </div>
         </fieldset>
         <button disabled id="saveButton" onclick="qBittorrent.RssDownloader.saveSettings()">
-            QBT_TR(Save)QBT_TR[CONTEXT=RssReaderWidget]
+            QBT_TR(Save)QBT_TR[CONTEXT=HttpServer]
         </button>
     </div>
     <div id="rightRssDownloaderColumn">
-        <b id="articleTableDesc">QBT_TR(Matching RSS Articles:)QBT_TR[CONTEXT=RssReaderWidget]</b>
+        <b id="articleTableDesc">QBT_TR(Matching RSS Articles)QBT_TR[CONTEXT=AutomatedRssDownloader]</b>
         <div id="rssDownloaderArticlesTable">
             <div id="rssDownloaderArticlesFixedHeaderDiv" class="dynamicTableFixedHeaderDiv invisible">
                 <table class="dynamicTable unselectable" style="position:relative; width:100%">
@@ -245,10 +245,10 @@
 </div>
 
 <ul id="rssDownloaderRuleMenu" class="contextMenu">
-    <li><a href="#addRule"><img src="images/qbt-theme/document-new.svg" alt="QBT_TR(Add new rule...)QBT_TR[CONTEXT=RssReaderWidget]" /> QBT_TR(Add new rule...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
-    <li><a href="#deleteRule"><img src="images/qbt-theme/list-remove.svg" alt="QBT_TR(Delete rule)QBT_TR[CONTEXT=RssReaderWidget]" /> QBT_TR(Delete rule)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
-    <li class="separator"><a href="#renameRule"><img src="images/qbt-theme/edit-rename.svg" alt="QBT_TR(Rename rule...)QBT_TR[CONTEXT=RssReaderWidget]" /> QBT_TR(Rename rule...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
-    <li class="separator"><a href="#clearDownloadedEpisodes"><img src="images/qbt-theme/edit-clear.svg" alt="QBT_TR(Clear downloaded episodes...)QBT_TR[CONTEXT=RssReaderWidget]" /> QBT_TR(Clear downloaded episodes...)QBT_TR[CONTEXT=RssReaderWidget]</a></li>
+    <li><a href="#addRule"><img src="images/qbt-theme/document-new.svg" alt="QBT_TR(Add new rule...)QBT_TR[CONTEXT=AutomatedRssDownloader]" /> QBT_TR(Add new rule...)QBT_TR[CONTEXT=AutomatedRssDownloader]</a></li>
+    <li><a href="#deleteRule"><img src="images/qbt-theme/list-remove.svg" alt="QBT_TR(Delete rule)QBT_TR[CONTEXT=AutomatedRssDownloader]" /> QBT_TR(Delete rule)QBT_TR[CONTEXT=AutomatedRssDownloader]</a></li>
+    <li class="separator"><a href="#renameRule"><img src="images/qbt-theme/edit-rename.svg" alt="QBT_TR(Rename rule...)QBT_TR[CONTEXT=AutomatedRssDownloader]" /> QBT_TR(Rename rule...)QBT_TR[CONTEXT=AutomatedRssDownloader]</a></li>
+    <li class="separator"><a href="#clearDownloadedEpisodes"><img src="images/qbt-theme/edit-clear.svg" alt="QBT_TR(Clear downloaded episodes...)QBT_TR[CONTEXT=AutomatedRssDownloader]" /> QBT_TR(Clear downloaded episodes...)QBT_TR[CONTEXT=AutomatedRssDownloader]</a></li>
 </ul>
 
 <script>
@@ -440,7 +440,7 @@
         const addRule = function() {
             new MochaUI.Window({
                 id: 'newRulePage',
-                title: 'QBT_TR(New rule name)QBT_TR[CONTEXT=RssReaderWidget]',
+                title: 'QBT_TR(New rule name)QBT_TR[CONTEXT=AutomatedRssDownloader]',
                 loadMethod: 'iframe',
                 contentURL: 'newrule.html',
                 scrollbars: false,
@@ -454,7 +454,7 @@
         const renameRule = function(rule) {
             new MochaUI.Window({
                 id: 'renameRulePage',
-                title: 'QBT_TR(Rule renaming)QBT_TR[CONTEXT=RssReaderWidget]',
+                title: 'QBT_TR(Rule renaming)QBT_TR[CONTEXT=AutomatedRssDownloader]',
                 loadMethod: 'iframe',
                 contentURL: 'rename_rule.html?rule=' + encodeURIComponent(rule),
                 scrollbars: false,
@@ -468,7 +468,7 @@
         const removeRule = function(rules) {
             new MochaUI.Window({
                 id: 'removeRulePage',
-                title: 'QBT_TR(Rule deletion confirmation)QBT_TR[CONTEXT=RssReaderWidget]',
+                title: 'QBT_TR(Rule deletion confirmation)QBT_TR[CONTEXT=AutomatedRssDownloader]',
                 loadMethod: 'iframe',
                 contentURL: 'confirmruledeletion.html?rules=' + encodeURIComponent(rules.join('|')),
                 scrollbars: false,
@@ -482,7 +482,7 @@
         const clearDownloadedEpisodes = function(rules) {
             new MochaUI.Window({
                 id: 'clearRulesPage',
-                title: 'QBT_TR(New rule name)QBT_TR[CONTEXT=RssReaderWidget]',
+                title: 'QBT_TR(New rule name)QBT_TR[CONTEXT=AutomatedRssDownloader]',
                 loadMethod: 'iframe',
                 contentURL: 'confirmruleclear.html?rules=' + encodeURIComponent(rules.join('|')),
                 scrollbars: false,
@@ -602,7 +602,7 @@
                 $('savetoDifferentDir').checked = false;
                 $('saveTo_text').value = "";
                 $('ignoreDaysValue').value = 0;
-                $('lastMatchText').innerHTML = "QBT_TR(Unknown)QBT_TR[CONTEXT=RssReaderWidget]";
+                $('lastMatchText').innerHTML = "QBT_TR(Last Match: Unknown)QBT_TR[CONTEXT=AutomatedRssDownloader]";
                 $('addPaused_combobox').value = "default";
                 $('creatSubfolder_combobox').value = "default";
                 rssDownloaderFeedSelectionTable.clear();
@@ -639,10 +639,11 @@
                 //calculate days since last match
                 if (rulesList[ruleName].lastMatch != "") {
                     let timeDiffInMs = new Date().getTime() - new Date(rulesList[ruleName].lastMatch).getTime();
-                    $('lastMatchText').innerHTML = Math.floor(timeDiffInMs / (1000 * 60 * 60 * 24)).toString() + " QBT_TR(days ago)QBT_TR[CONTEXT=RssReaderWidget]";
+                    let daysAgo = Math.floor(timeDiffInMs / (1000 * 60 * 60 * 24)).toString();
+                    $('lastMatchText').innerHTML = " QBT_TR(Last Match: %1 days ago)QBT_TR[CONTEXT=AutomatedRssDownloader]".replace('%1', daysAgo);
                 }
                 else {
-                    $('lastMatchText').innerHTML = "QBT_TR(Unknown)QBT_TR[CONTEXT=RssReaderWidget]";
+                    $('lastMatchText').innerHTML = "QBT_TR(Last Match: Unknown)QBT_TR[CONTEXT=AutomatedRssDownloader]";
                 }
 
                 if (rulesList[ruleName].addPaused === null)

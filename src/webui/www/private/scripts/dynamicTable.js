@@ -1994,7 +1994,7 @@ window.qBittorrent.DynamicTable = (function() {
         Extends: DynamicTable,
         initColumns: function() {
             this.newColumn('state_icon', '', '', 30, true);
-            this.newColumn('name', '', 'QBT_TR(Rss feeds)QBT_TR[CONTEXT=RssReaderWidget]', -1, true);
+            this.newColumn('name', '', 'QBT_TR(RSS feeds)QBT_TR[CONTEXT=FeedListWidget]', -1, true);
 
             this.columns['state_icon'].dataProperties[0] = '';
 
@@ -2145,7 +2145,7 @@ window.qBittorrent.DynamicTable = (function() {
     const RssArticleTable = new Class({
         Extends: DynamicTable,
         initColumns: function() {
-            this.newColumn('name', '', 'QBT_TR(Torrents:)QBT_TR[CONTEXT=RssReaderWidget]', -1, true);
+            this.newColumn('name', '', 'QBT_TR(Torrents: (double-click to download))QBT_TR[CONTEXT=RSSWidget]', -1, true);
         },
         setupHeaderMenu: function() {},
         setupHeaderEvents: function() {},
