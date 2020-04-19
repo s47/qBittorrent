@@ -181,6 +181,17 @@
                 onSuccess: function(pref) {
                     if (!pref.rss_processing_enabled)
                         $('rssFetchingDisabled').removeClass('invisible');
+
+                    //recalculate heights
+                    var pageOffset = $('rssTopBar').getBoundingClientRect().height +
+                                        $('desktopHeader').getBoundingClientRect().height +
+                                        $('desktopFooterWrapper').getBoundingClientRect().height +
+                                        $('rssFeedFixedHeaderDiv').getBoundingClientRect().height +
+                                        20;
+
+                    $('rssFeedTableDiv').style.height = "calc(100vh - " + pageOffset + "px)";
+                    $('rssArticleTableDiv').style.height = "calc(100vh - " + pageOffset + "px)";
+                    $('rssConentView').style.height = "calc(100% - " + $('rssTopBar').getBoundingClientRect().height + "px)";
                 }
             }).send();
 
