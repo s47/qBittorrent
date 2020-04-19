@@ -57,6 +57,11 @@
     #rssTorrentDetailsDate {
         background-color: #EFEFEF;
     }
+
+    #rssDetailsView {
+        height: calc(100vh - 135px);
+        overflow: auto;
+    }
 </style>
 
 <div id="rssView">
@@ -183,14 +188,16 @@
                         $('rssFetchingDisabled').removeClass('invisible');
 
                     //recalculate heights
-                    var pageOffset = $('rssTopBar').getBoundingClientRect().height +
+                    var nonPageHeight = $('rssTopBar').getBoundingClientRect().height +
                                         $('desktopHeader').getBoundingClientRect().height +
-                                        $('desktopFooterWrapper').getBoundingClientRect().height +
-                                        $('rssFeedFixedHeaderDiv').getBoundingClientRect().height +
-                                        20;
+                                        $('desktopFooterWrapper').getBoundingClientRect().height + 20;
+                    $('rssDetailsView').style.height = "calc(100vh - " + nonPageHeight + "px)";
 
-                    $('rssFeedTableDiv').style.height = "calc(100vh - " + pageOffset + "px)";
-                    $('rssArticleTableDiv').style.height = "calc(100vh - " + pageOffset + "px)";
+                    var nonTableHeight = nonPageHeight + $('rssFeedFixedHeaderDiv').getBoundingClientRect().height;
+                    
+                    $('rssFeedTableDiv').style.height = "calc(100vh - " + nonTableHeight + "px)";
+                    $('rssArticleTableDiv').style.height = "calc(100vh - " + nonTableHeight + "px)";
+
                     $('rssConentView').style.height = "calc(100% - " + $('rssTopBar').getBoundingClientRect().height + "px)";
                 }
             }).send();
