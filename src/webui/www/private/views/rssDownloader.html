@@ -98,7 +98,7 @@
         <fieldset class="settings" id="ruleSettings">
             <legend>QBT_TR(Rule Definition)QBT_TR[CONTEXT=AutomatedRssDownloader]</legend>
             <div class="formRow">
-                <input disabled type="checkbox" id="useRegEx" />
+                <input disabled type="checkbox" id="useRegEx" onclick="qBittorrent.RssDownloader.setElementTitles()"/>
                 <label for="useRegEx">QBT_TR(Use Regular Expressions)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
             </div>
             <table class="fullWidth">
@@ -127,7 +127,8 @@
                     </td>
                 </tr>
             </table>
-            <div class="formRow">
+            <div class="formRow" title="QBT_TR(Smart Episode Filter will check the episode number to prevent downloading of duplicates.
+Supports the formats: S01E01, 1x1, 2017.01.01 and 01.01.2017 (Date formats also support - as a separator))QBT_TR[CONTEXT=AutomatedRssDownloader]">
                 <input disabled type="checkbox" id="useSmartFilter" />
                 <label for="useSmartFilter">QBT_TR(Use Smart Episode Filter)QBT_TR[CONTEXT=AutomatedRssDownloader]</label>
             </div>
@@ -267,7 +268,8 @@
                 modifyRuleState: modifyRuleState,
                 saveSettings: saveSettings,
                 rssDownloaderRulesTable: rssDownloaderRulesTable,
-                rssDownloaderFeedSelectionTable: rssDownloaderFeedSelectionTable
+                rssDownloaderFeedSelectionTable: rssDownloaderFeedSelectionTable,
+                setElementTitles: setElementTitles
             };
         };
 
@@ -607,6 +609,10 @@
                 $('creatSubfolder_combobox').value = "default";
                 rssDownloaderFeedSelectionTable.clear();
                 rssDownloaderArticlesTable.clear();
+
+                $('mustContain_text').title = '';
+                $('mustNotContain_text').title = '';
+                $('episodeFilter_text').title = '';
             }
             else {
                 //enable all
@@ -656,6 +662,8 @@
                 else
                     $('creatSubfolder_combobox').value = rulesList[ruleName].createSubfolder ? "always" : "never";
 
+                setElementTitles();
+
                 rssDownloaderFeedSelectionTable.clear();
                 let rowCount = 0;
                 feedList.forEach(feed => {
@@ -669,6 +677,42 @@
                 rssDownloaderFeedSelectionTable.updateTable(false);
                 updateMatchingArticles(ruleName);
             }
+        }
+
+        const setElementTitles = function() {
+            var mainPart;
+            if ($('useRegEx').checked) {
+                mainPart = "QBT_TR(Regex mode: use Perl-compatible regular expressions)QBT_TR[CONTEXT=AutomatedRssDownloader]\n\n";
+            }
+            else {
+                mainPart = "QBT_TR(Wildcard mode: you can use)QBT_TR[CONTEXT=AutomatedRssDownloader]\n\n" +
+                            " ● QBT_TR(? to match any single character)QBT_TR[CONTEXT=AutomatedRssDownloader]\n" +
+                            " ● QBT_TR(* to match zero or more of any characters)QBT_TR[CONTEXT=AutomatedRssDownloader]\n" +
+                            " ● QBT_TR(Whitespaces count as AND operators (all words, any order))QBT_TR[CONTEXT=AutomatedRssDownloader]\n" +
+                            " ● QBT_TR(| is used as OR operator)QBT_TR[CONTEXT=AutomatedRssDownloader]\n\n" + 
+                            "QBT_TR(If word order is important use * instead of whitespace.)QBT_TR[CONTEXT=AutomatedRssDownloader]\n\n";
+            }
+            var secondPart = "QBT_TR(An expression with an empty %1 clause (e.g. %2))QBT_TR[CONTEXT=AutomatedRssDownloader]"
+                                .replace('%1', '|').replace('%2', 'expr|');
+
+            $('mustContain_text').title = mainPart + secondPart + "QBT_TR( will match all articles.)QBT_TR[CONTEXT=AutomatedRssDownloader]";
+            $('mustNotContain_text').title = mainPart + secondPart + "QBT_TR( will exclude all articles.)QBT_TR[CONTEXT=AutomatedRssDownloader]";
+
+            var episodeFilterTitle = "QBT_TR(Matches articles based on episode filter.)QBT_TR[CONTEXT=AutomatedRssDownloader]\n\n" +
+                                        "QBT_TR(Example: )QBT_TR[CONTEXT=AutomatedRssDownloader]" +
+                                        "1x2;8-15;5;30-;" + 
+                                        "QBT_TR( will match 2, 5, 8 through 15, 30 and onward episodes of season one)QBT_TR[CONTEXT=AutomatedRssDownloader]\n\n" + 
+                                        "QBT_TR(Episode filter rules: )QBT_TR[CONTEXT=AutomatedRssDownloader]\n\n" + 
+                                        " ● QBT_TR(Season number is a mandatory non-zero value)QBT_TR[CONTEXT=AutomatedRssDownloader]\n" + 
+                                        " ● QBT_TR(Episode number is a mandatory positive value)QBT_TR[CONTEXT=AutomatedRssDownloader]\n" + 
+                                        " ● QBT_TR(Filter must end with semicolon)QBT_TR[CONTEXT=AutomatedRssDownloader]\n" + 
+                                        " ● QBT_TR(Three range types for episodes are supported: )QBT_TR[CONTEXT=AutomatedRssDownloader]\n" + 
+                                        "    ● QBT_TR(Single number: &lt;b&gt;1x25;&lt;/b&gt; matches episode 25 of season one)QBT_TR[CONTEXT=AutomatedRssDownloader]\n" + 
+                                        "    ● QBT_TR(Normal range: &lt;b&gt;1x25-40;&lt;/b&gt; matches episodes 25 through 40 of season one)QBT_TR[CONTEXT=AutomatedRssDownloader]\n" + 
+                                        "    ● QBT_TR(Infinite range: &lt;b&gt;1x25-;&lt;/b&gt; matches episodes 25 and upward of season one, and all episodes of later seasons)QBT_TR[CONTEXT=AutomatedRssDownloader]";
+
+            episodeFilterTitle = episodeFilterTitle.replace(/&lt;b&gt;/g, '').replace(/&lt;\/b&gt;/g, '');
+            $('episodeFilter_text').title = episodeFilterTitle;
         }
 
 
