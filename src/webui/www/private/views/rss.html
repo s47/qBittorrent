@@ -35,8 +35,8 @@
 
     #leftRssColumn, #centerRssColumn, #rightRssColumn {
         float: left;
-        height: 100%;
-        width: calc(calc(100% - 20px) / 3);
+        /*should be 20 px but due to rounding differences some browsers don't render that properly*/
+        width: calc(calc(100% - 21px) / 3); 
         border: none;
     }
 
@@ -188,12 +188,12 @@
                         $('rssFetchingDisabled').removeClass('invisible');
 
                     //recalculate heights
-                    var nonPageHeight = $('rssTopBar').getBoundingClientRect().height +
+                    let nonPageHeight = $('rssTopBar').getBoundingClientRect().height +
                                         $('desktopHeader').getBoundingClientRect().height +
                                         $('desktopFooterWrapper').getBoundingClientRect().height + 20;
                     $('rssDetailsView').style.height = "calc(100vh - " + nonPageHeight + "px)";
 
-                    var nonTableHeight = nonPageHeight + $('rssFeedFixedHeaderDiv').getBoundingClientRect().height;
+                    let nonTableHeight = nonPageHeight + $('rssFeedFixedHeaderDiv').getBoundingClientRect().height;
                     
                     $('rssFeedTableDiv').style.height = "calc(100vh - " + nonTableHeight + "px)";
                     $('rssArticleTableDiv').style.height = "calc(100vh - " + nonTableHeight + "px)";
@@ -473,6 +473,7 @@
                     if (match) {
                         //partial refresh
                         //update status
+                        let statusDiffers = false;
                         for (let i = 0; i < flattenedResp.length; ++i) {
                             let oldStatus = rssFeedTable.rows[i + 1].full_data.status;
                             let status = "default";

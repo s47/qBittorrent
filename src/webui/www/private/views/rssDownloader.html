@@ -9,24 +9,21 @@
 
     #leftRssDownloaderColumn {
         width: 25%;
-        height: 100%;
         float: left;
     }
 
-    #rulesTable {
+    #rulesTable, #rssDownloaderArticlesTable {
         overflow: auto;
         width: 100%;
         height: 100%;
     }
 
     #centerRssDownloaderColumn {
-        height: 100%;
         width: 50%;
         float: left;
     }
 
     #rightRssDownloaderColumn {
-        height: 100%;
         width: 25%;
         float: left;
     }
@@ -45,7 +42,7 @@
         overflow: hidden;
     }
 
-    #rssDownloaderFeedsTable , #rssDownloaderArticlesTable {
+    #rssDownloaderFeedsTable {
         height: calc(100% - 21px);
         width: 100%;
         overflow: auto;
@@ -295,7 +292,7 @@
                         $('rssDownloaderDisabled').removeClass('invisible');
 
                     //recalculate height
-                    var warningHeight = $('rssDownloaderDisabled').getBoundingClientRect().height;
+                    let warningHeight = $('rssDownloaderDisabled').getBoundingClientRect().height;
 
                     $('leftRssDownloaderColumn').style.height = "calc(100% - " + warningHeight + "px)";
                     $('centerRssDownloaderColumn').style.height = "calc(100% - " + warningHeight + "px)";
@@ -304,10 +301,19 @@
                     $('rulesTable').style.height = "calc(100% - " + $('rulesTableDesc').getBoundingClientRect().height + "px)";
                     $('rssDownloaderArticlesTable').style.height = "calc(100% - " + $('articleTableDesc').getBoundingClientRect().height + "px)";
 
-                    var centerRowNotTableHeight = $('saveButton').getBoundingClientRect().height +
+                    let centerRowNotTableHeight = $('saveButton').getBoundingClientRect().height +
                                                     $('ruleSettings').getBoundingClientRect().height + 15;
 
                     $('rssDownloaderFeeds').style.height = "calc(100% - " + centerRowNotTableHeight + "px)";
+
+                    //firefox calculates the height of the table inside fieldset differently and thus doesn't need the offset
+                    if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+                        $('rssDownloaderFeedsTable').style.height = "100%";
+                    }
+                    else {
+                        let outsideTableHeight = ($('rssDownloaderFeedsTable').getBoundingClientRect().top - $('rssDownloaderFeeds').getBoundingClientRect().top) - 10;
+                        $('rssDownloaderFeedsTable').style.height = "calc(100% - " + outsideTableHeight + "px)";
+                    }
                 }
             }).send();
 
@@ -582,6 +588,7 @@
                 $('assignCategory_combobox').disabled = true;
                 $('savetoDifferentDir').disabled = true;
                 $('saveTo_text').disabled = true;
+                $('ignoreDaysValue').disabled = true;
                 $('addPaused_combobox').disabled = true;
                 $('creatSubfolder_combobox').disabled = true;
 
@@ -613,6 +620,7 @@
                 $('savetoDifferentDir').disabled = false;
                 $('savetoDifferentDir').checked = rulesList[ruleName].savePath ? false : true;
                 $('saveTo_text').disabled = rulesList[ruleName].savePath ? false : true;
+                $('ignoreDaysValue').disabled = false;
                 $('addPaused_combobox').disabled = false;
                 $('creatSubfolder_combobox').disabled = false;
 
