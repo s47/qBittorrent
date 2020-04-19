@@ -63,11 +63,20 @@
     .articleTableArticle td {
         padding-left: 22px;
     }
+    
+    #rssDownloaderDisabled {
+        color: red;
+        font-style: italic;
+        margin-bottom: 10px;
+    }
 </style>
 
 <div id="RssDownloader" class="RssDownloader">
+    <div id="rssDownloaderDisabled" class="invisible">
+        QBT_TR(Auto downloading of RSS torrents is disabled now! You can enable it in application settings.)QBT_TR[CONTEXT=RssReaderWidget]
+    </div>
     <div id="leftRssDownloaderColumn">
-        <b>QBT_TR(Download Rules)QBT_TR[CONTEXT=RssReaderWidget]</b>
+        <b id="rulesTableDesc">QBT_TR(Download Rules)QBT_TR[CONTEXT=RssReaderWidget]</b>
         <div id="rulesTable">
             <div id="rulesSelection_checkBoxList">
                 <div id="rssDownloaderRuleFixedHeaderDiv" class="dynamicTableFixedHeaderDiv invisible">
@@ -89,7 +98,7 @@
         </div>
     </div>
     <div id="centerRssDownloaderColumn">
-        <fieldset class="settings">
+        <fieldset class="settings" id="ruleSettings">
             <legend>QBT_TR(Rule Definition)QBT_TR[CONTEXT=RssReaderWidget]</legend>
             <div class="formRow">
                 <input disabled type="checkbox" id="useRegEx" />
@@ -217,7 +226,7 @@
         </button>
     </div>
     <div id="rightRssDownloaderColumn">
-        <b>QBT_TR(Matching RSS Articles:)QBT_TR[CONTEXT=RssReaderWidget]</b>
+        <b id="articleTableDesc">QBT_TR(Matching RSS Articles:)QBT_TR[CONTEXT=RssReaderWidget]</b>
         <div id="rssDownloaderArticlesTable">
             <div id="rssDownloaderArticlesFixedHeaderDiv" class="dynamicTableFixedHeaderDiv invisible">
                 <table class="dynamicTable unselectable" style="position:relative; width:100%">
@@ -274,6 +283,34 @@
         let feedList;
 
         const initRssDownloader = function() {
+            new Request.JSON({
+                url: 'api/v2/app/preferences',
+                method: 'get',
+                noCache: true,
+                onFailure: function() {
+                    alert("Could not contact qBittorrent");
+                },
+                onSuccess: function(pref) {
+                    if (!pref.rss_auto_downloading_enabled)
+                        $('rssDownloaderDisabled').removeClass('invisible');
+
+                    //recalculate height
+                    var warningHeight = $('rssDownloaderDisabled').getBoundingClientRect().height;
+
+                    $('leftRssDownloaderColumn').style.height = "calc(100% - " + warningHeight + "px)";
+                    $('centerRssDownloaderColumn').style.height = "calc(100% - " + warningHeight + "px)";
+                    $('rightRssDownloaderColumn').style.height = "calc(100% - " + warningHeight + "px)";
+
+                    $('rulesTable').style.height = "calc(100% - " + $('rulesTableDesc').getBoundingClientRect().height + "px)";
+                    $('rssDownloaderArticlesTable').style.height = "calc(100% - " + $('articleTableDesc').getBoundingClientRect().height + "px)";
+
+                    var centerRowNotTableHeight = $('saveButton').getBoundingClientRect().height +
+                                                    $('ruleSettings').getBoundingClientRect().height + 15;
+
+                    $('rssDownloaderFeeds').style.height = "calc(100% - " + centerRowNotTableHeight + "px)";
+                }
+            }).send();
+
             rssDownloaderRuleContextMenu = new window.qBittorrent.ContextMenu.RssDownloaderRuleContextMenu({
                 targets: '',
                 menu: 'rssDownloaderRuleMenu',
