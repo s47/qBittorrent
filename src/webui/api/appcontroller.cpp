@@ -256,7 +256,7 @@ void AppController::preferencesAction()
     data["rss_processing_enabled"] = RSS::Session::instance()->isProcessingEnabled();
     data["rss_auto_downloading_enabled"] = RSS::AutoDownloader::instance()->isProcessingEnabled();
     data["rss_download_repack_proper_episodes"] = RSS::AutoDownloader::instance()->downloadRepacks();
-    data["rss_smart_filters"] = RSS::AutoDownloader::instance()->smartEpisodeFilters().join("\n");
+    data["rss_smart_episode_filters"] = RSS::AutoDownloader::instance()->smartEpisodeFilters().join("\n");
 
     // Advanced settings
     // qBitorrent preferences

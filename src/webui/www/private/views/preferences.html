@@ -1770,7 +1770,7 @@
                         $('maximum_article_number').setProperty('value', pref.rss_max_articles_per_feed);
                         $('enable_auto_downloading_rss_torrents_checkbox').setProperty('checked', pref.rss_auto_downloading_enabled);
                         $('downlock_repack_proper_episodes').setProperty('checked', pref.rss_download_repack_proper_episodes);
-                        $('rss_filter_textarea').setProperty('value', pref.rss_smart_filters);
+                        $('rss_filter_textarea').setProperty('value', pref.rss_smart_episode_filters);
 
                         // Web UI tab
                         // Language
@@ -2126,7 +2126,7 @@
             settings.set('rss_max_articles_per_feed', $('maximum_article_number').getProperty('value'));
             settings.set('rss_auto_downloading_enabled', $('enable_auto_downloading_rss_torrents_checkbox').getProperty('checked'));
             settings.set('rss_download_repack_proper_episodes', $('downlock_repack_proper_episodes').getProperty('checked'));
-            settings.set('rss_smart_filters', $('rss_filter_textarea').getProperty('value'));
+            settings.set('rss_smart_episode_filters', $('rss_filter_textarea').getProperty('value'));
 
             // Web UI tab
             // Language
