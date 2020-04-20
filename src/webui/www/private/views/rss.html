@@ -684,13 +684,17 @@
         const markItemAsRead = function(path) {
             //feed data mark as read
             for (let feedID in feedData)
-                if (pathByFeedId.get(feedID) == path)
+                if (pathByFeedId.get(feedID).slice(0, path.length) == path)
                     feedData[feedID].each(el => el.isRead = true);
 
             //mark rows as read
             rssArticleTable.rows.each(el => el.full_data.isRead = true);
 
-            //find row
+            //find all children and set unread count to 0
+            rssFeedTable.rows.filter(row => row.full_data.dataPath.slice(0, path.length) == path && path != row.full_data.dataPath)
+                .each(row => row.full_data.unread = 0);
+
+            //find selected row
             let rowId, prevUnreadCount;
             rssFeedTable.rows.forEach(row => {
                 if (row.full_data.dataPath == path) {
@@ -699,7 +703,7 @@
                 }
             });
 
-            //find all items that contain this feed and subtract previous unread count
+            //find all parents (and self) and subtract previous unread count
             rssFeedTable.rows.filter(row => path.slice(0, row.full_data.dataPath.length) == row.full_data.dataPath)
                 .each(row => row.full_data.unread -= prevUnreadCount);
 
@@ -708,11 +712,11 @@
 
             //send request
             new Request({
-                url: 'api/v2/rss/markItemAsRead',
+                url: 'api/v2/rss/markAsRead',
                 noCache: true,
                 method: 'post',
                 data: {
-                    path: path
+                    itemPath: path
                 },
                 onFailure: function(response) {
                     if (response.status == 409)
@@ -749,7 +753,7 @@
                 rssFeedTable.updateTable(true);
 
                 new Request({
-                    url: 'api/v2/rss/markArticleAsRead',
+                    url: 'api/v2/rss/markAsRead',
                     noCache: true,
                     method: 'post',
                     data: {
@@ -765,14 +769,13 @@
         };
 
         const markSelectedAsRead = function() {
-            let feedsToMark = new Set();
-            rssFeedTable.selectedRows.each(rowId => {
-                let selectedPath = rssFeedTable.rows[rowId].full_data.dataPath;
-                rssFeedTable.rows.filter(row => row.full_data.dataPath.slice(0, selectedPath.length) == selectedPath)
-                    .filter(row => row.full_data.dataUid != "")
-                    .each(row => feedsToMark.add(row));
-            });
-            feedsToMark.forEach(feed => markItemAsRead(feed.full_data.dataPath))
+            let selectedDatapaths = rssFeedTable.selectedRows
+                            .map(sRow => rssFeedTable.rows[sRow].full_data.dataPath);
+            //filter children
+            let reducedDatapaths = selectedDatapaths.filter(path => 
+                selectedDatapaths.filter(innerPath => path.slice(0, innerPath.length) == innerPath).length == 1
+            );
+            reducedDatapaths.each(path => markItemAsRead(path));
         };
 
         const openRssDownloader = function() {

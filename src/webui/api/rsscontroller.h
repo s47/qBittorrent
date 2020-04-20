@@ -44,8 +44,7 @@ private slots:
     void removeItemAction();
     void moveItemAction();
     void itemsAction();
-    void markItemAsReadAction();
-    void markArticleAsReadAction();
+    void markAsReadAction();
     void refreshItemAction();
     void setRuleAction();
     void renameRuleAction();

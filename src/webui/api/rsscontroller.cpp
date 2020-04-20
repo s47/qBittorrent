@@ -94,27 +94,24 @@ void RSSController::itemsAction()
     setResult(jsonVal.toObject());
 }
 
-void RSSController::markItemAsReadAction()
+void RSSController::markAsReadAction()
 {
     requireParams({"itemPath"});
 
     const QString itemPath {params()["itemPath"]};
-    RSS::Item *item = RSS::Session::instance()->itemByPath(itemPath);
-    if (item)
-        item->markAsRead();
-}
-
-void RSSController::markArticleAsReadAction()
-{
-    requireParams({"itemPath", "articleId"});
-
-    const QString itemPath {params()["itemPath"]};
     const QString articleId {params()["articleId"]};
 
-    RSS::Feed *item = (RSS::Feed*) RSS::Session::instance()->itemByPath(itemPath);
+    RSS::Item *item = RSS::Session::instance()->itemByPath(itemPath);
     if (item) {
-        RSS::Article *article = item->articleByGUID(articleId);
-        article->markAsRead();
+        if(!articleId.isEmpty()) {
+           RSS::Feed* feed = qobject_cast<RSS::Feed*>(item);
+           if (feed != nullptr) {
+               feed->articleByGUID(articleId)->markAsRead();
+           }
+        }
+        else {
+            item->markAsRead();
+        }
     }
 }
 
@@ -171,7 +168,7 @@ void RSSController::matchingArticlesAction()
 {
     requireParams({"ruleName"});
 
-    const QString ruleName {params()["ruleName"].trimmed()};
+    const QString ruleName {params()["ruleName"]};
     RSS::AutoDownloadRule rule = RSS::AutoDownloader::instance()->ruleByName(ruleName);
 
     QJsonObject jsonObj;
