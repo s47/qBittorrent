@@ -172,20 +172,20 @@ void RSSController::matchingArticlesAction()
     requireParams({"ruleName"});
 
     const QString ruleName {params()["ruleName"].trimmed()};
-    const QList<RSS::Article *> articles {RSS::AutoDownloader::instance()->matchingArticles(ruleName)};
+    RSS::AutoDownloadRule rule = RSS::AutoDownloader::instance()->ruleByName(ruleName);
 
     QJsonObject jsonObj;
-    for (const auto &article : articles) {
-        QString feedName = article->feed()->name();
-        if (!jsonObj.contains(feedName)) {
-            QJsonArray newArray {article->title()};
-            jsonObj.insert(feedName, newArray);
-        }
-        else {
-            QJsonArray keyArray = jsonObj[feedName].toArray();
-            keyArray.push_back(article->title());
-            jsonObj.insert(feedName, keyArray);
-        }
+    for (const QString &feedURL : rule.feedURLs()) {
+        auto feed = RSS::Session::instance()->feedByURL(feedURL);
+        if (!feed) continue; // feed doesn't exist
+
+        QJsonArray matchingArticles;
+        for (const auto article : feed->articles())
+            if (rule.matches(article->data()))
+                matchingArticles << article->title();
+        if (!matchingArticles.isEmpty())
+            jsonObj.insert(feed->name(), matchingArticles);
     }
+
     setResult(jsonObj);
 }
