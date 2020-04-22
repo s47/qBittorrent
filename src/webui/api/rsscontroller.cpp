@@ -28,10 +28,10 @@
 
 #include "rsscontroller.h"
 
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QJsonArray>
 
 #include "base/rss/rss_article.h"
 #include "base/rss/rss_autodownloader.h"
@@ -102,16 +102,18 @@ void RSSController::markAsReadAction()
     const QString articleId {params()["articleId"]};
 
     RSS::Item *item = RSS::Session::instance()->itemByPath(itemPath);
-    if (item) {
-        if(!articleId.isEmpty()) {
-           RSS::Feed* feed = qobject_cast<RSS::Feed*>(item);
-           if (feed != nullptr) {
-               feed->articleByGUID(articleId)->markAsRead();
-           }
+    if (!item) return;
+
+    if (!articleId.isNull()) {
+        RSS::Feed *feed = qobject_cast<RSS::Feed *>(item);
+        if (feed) {
+            RSS::Article *article = feed->articleByGUID(articleId);
+            if (article)
+                article->markAsRead();
         }
-        else {
-            item->markAsRead();
-        }
+    }
+    else {
+        item->markAsRead();
     }
 }
 
@@ -169,17 +171,18 @@ void RSSController::matchingArticlesAction()
     requireParams({"ruleName"});
 
     const QString ruleName {params()["ruleName"]};
-    RSS::AutoDownloadRule rule = RSS::AutoDownloader::instance()->ruleByName(ruleName);
+    const RSS::AutoDownloadRule rule = RSS::AutoDownloader::instance()->ruleByName(ruleName);
 
     QJsonObject jsonObj;
     for (const QString &feedURL : rule.feedURLs()) {
-        auto feed = RSS::Session::instance()->feedByURL(feedURL);
+        const RSS::Feed *feed = RSS::Session::instance()->feedByURL(feedURL);
         if (!feed) continue; // feed doesn't exist
 
         QJsonArray matchingArticles;
-        for (const auto article : feed->articles())
+        for (const RSS::Article *article : feed->articles()) {
             if (rule.matches(article->data()))
                 matchingArticles << article->title();
+        }
         if (!matchingArticles.isEmpty())
             jsonObj.insert(feed->name(), matchingArticles);
     }
