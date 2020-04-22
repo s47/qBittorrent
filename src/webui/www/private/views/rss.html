@@ -516,7 +516,19 @@
                                 }
 
                                 if (articlesDiffer) {
+                                    //update unread count
+                                    let oldUnread = feedData[r.uid].map(art => !art.isRead).filter(v => v).length;
+                                    let newUnread = r.articles.map(art => !art.isRead).filter(v => v).length;
+                                    let unreadDifference = newUnread - oldUnread;
+
+                                    //find all parents (and self) and add unread difference
+                                    rssFeedTable.rows.filter(row => r.fullName.slice(0, row.full_data.dataPath.length) == row.full_data.dataPath)
+                                        .each(row => row.full_data.unread += unreadDifference);
+                                    needsUpdate = true;
+
+                                    //update data
                                     feedData[r.uid] = r.articles;
+
                                     //if feed that is open changed, reload
                                     if (openedFeedPath !== undefined && r.fullName.slice(0, openedFeedPath.length) == openedFeedPath)
                                         showRssFeed(r.fullName);
@@ -800,7 +812,4 @@
 
         return exports();
     })();
-
-
-
 </script>

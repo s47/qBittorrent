@@ -641,9 +641,3 @@ td.statusBarSeparator {
     background-color: #ee6600;
     color: #fff;
 }
-
-/* Rss Reader*/
-
-#RssPanel, #RssPanel_wrapper, #RssPanel_pad {
-    height: inherit;
-}
