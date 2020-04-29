@@ -34,6 +34,7 @@ let queueing_enabled = true;
 let serverSyncMainDataInterval = 1500;
 let customSyncMainDataInterval = null;
 let searchTabInitialized = false;
+let rssTabInitialized = false;
 
 let syncRequestInProgress = false;
 
@@ -154,8 +155,20 @@ window.addEvent('load', function() {
         $("searchTabColumn").addClass("invisible");
     };
 
+    const buildRssTab = function() {
+        new MochaUI.Column({
+            id: 'rssTabColumn',
+            placement: 'main',
+            width: null
+        });
+
+        // start off hidden
+        $("rssTabColumn").addClass("invisible");
+    };
+
     buildTransfersTab();
     buildSearchTab();
+    buildRssTab();
     MochaUI.initializeTabs('mainWindowTabsList');
 
     setCategoryFilter = function(hash) {
@@ -250,12 +263,7 @@ window.addEvent('load', function() {
 
     // After showing/hiding the toolbar + status bar
     let showSearchEngine = LocalPreferences.get('show_search_engine') !== "false";
-    if (!showSearchEngine) {
-        // uncheck menu option
-        $('showSearchEngineLink').firstChild.style.opacity = '0';
-        // hide tabs
-        $('mainWindowTabs').addClass('invisible');
-    }
+    let showRssReader = LocalPreferences.get('show_rss_reader') !== "false";
 
     // After Show Top Toolbar
     MochaUI.Desktop.setDesktopSize();
@@ -768,22 +776,48 @@ window.addEvent('load', function() {
     $('showSearchEngineLink').addEvent('click', function(e) {
         showSearchEngine = !showSearchEngine;
         LocalPreferences.set('show_search_engine', showSearchEngine.toString());
+        updateTabDisplay();
+    });
+
+    $('showRssReaderLink').addEvent('click', function(e) {
+        showRssReader = !showRssReader;
+        LocalPreferences.set('show_rss_reader', showRssReader.toString());
+        updateTabDisplay();
+    });
+
+    const updateTabDisplay = function() {
+        if (showRssReader) {
+            $('showRssReaderLink').firstChild.style.opacity = '1';
+            $('mainWindowTabs').removeClass('invisible');
+            $('rssTabLink').removeClass('invisible');
+            if (!MochaUI.Panels.instances.RssPanel)
+                addRssPanel();
+        }
+        else {
+            $('showRssReaderLink').firstChild.style.opacity = '0';
+            $('rssTabLink').addClass('invisible');
+            if ($('rssTabLink').hasClass('selected'))
+                $("transfersTabLink").click();
+        }
+
         if (showSearchEngine) {
             $('showSearchEngineLink').firstChild.style.opacity = '1';
             $('mainWindowTabs').removeClass('invisible');
-
-            addMainWindowTabsEventListener();
+            $('searchTabLink').removeClass('invisible');
             if (!MochaUI.Panels.instances.SearchPanel)
                 addSearchPanel();
         }
         else {
             $('showSearchEngineLink').firstChild.style.opacity = '0';
-            $('mainWindowTabs').addClass('invisible');
-            $("transfersTabLink").click();
-
-            removeMainWindowTabsEventListener();
+            $('searchTabLink').addClass('invisible');
+            if ($('searchTabLink').hasClass('selected'))
+                $("transfersTabLink").click();
         }
-    });
+
+        // display no tabs
+        if (!showRssReader && !showSearchEngine)
+            $('mainWindowTabs').addClass('invisible');
+    };
 
     $('StatisticsLink').addEvent('click', StatisticsLinkFN);
 
@@ -798,6 +832,7 @@ window.addEvent('load', function() {
         syncData(100);
 
         hideSearchTab();
+        hideRssTab();
     };
 
     const hideTransfersTab = function() {
@@ -816,6 +851,7 @@ window.addEvent('load', function() {
         $("searchTabColumn").removeClass("invisible");
         customSyncMainDataInterval = 30000;
         hideTransfersTab();
+        hideRssTab();
     };
 
     const hideSearchTab = function() {
@@ -823,14 +859,25 @@ window.addEvent('load', function() {
         MochaUI.Desktop.resizePanels();
     };
 
-    const addMainWindowTabsEventListener = function() {
-        $('transfersTabLink').addEvent('click', showTransfersTab);
-        $('searchTabLink').addEvent('click', showSearchTab);
+    const showRssTab = function() {
+        if (!rssTabInitialized) {
+            window.qBittorrent.Rss.init();
+            rssTabInitialized = true;
+        }
+        else {
+            window.qBittorrent.Rss.load();
+        }
+
+        $("rssTabColumn").removeClass("invisible");
+        customSyncMainDataInterval = 30000;
+        hideTransfersTab();
+        hideSearchTab();
     };
 
-    const removeMainWindowTabsEventListener = function() {
-        $('transfersTabLink').removeEvent('click', showTransfersTab);
-        $('searchTabLink').removeEvent('click', showSearchTab);
+    const hideRssTab = function() {
+        $("rssTabColumn").addClass("invisible");
+        window.qBittorrent.Rss.unload();
+        MochaUI.Desktop.resizePanels();
     };
 
     const addSearchPanel = function() {
@@ -848,6 +895,25 @@ window.addEvent('load', function() {
             contentURL: 'views/search.html',
             content: '',
             column: 'searchTabColumn',
+            height: null
+        });
+    };
+
+    const addRssPanel = function() {
+        new MochaUI.Panel({
+            id: 'RssPanel',
+            title: 'Rss',
+            header: false,
+            padding: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0
+            },
+            loadMethod: 'xhr',
+            contentURL: 'views/rss.html',
+            content: '',
+            column: 'rssTabColumn',
             height: null
         });
     };
@@ -989,10 +1055,10 @@ window.addEvent('load', function() {
         }
     });
 
-    if (showSearchEngine) {
-        addMainWindowTabsEventListener();
-        addSearchPanel();
-    }
+    $('transfersTabLink').addEvent('click', showTransfersTab);
+    $('searchTabLink').addEvent('click', showSearchTab);
+    $('rssTabLink').addEvent('click', showRssTab);
+    updateTabDisplay();
 });
 
 function registerMagnetHandler() {
